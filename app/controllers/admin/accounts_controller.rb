@@ -38,7 +38,7 @@ class Admin::AccountsController < AdminController
         system "cp /data/shared/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"
         system "cp /data/shared/config/database.yml #{path}/shared/config/domains/#{@account.directory}/database.yml"
       else
-        system "cp #{path}/current/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"        
+        system "cp /data/#{params[:oldaccount][:name]}/current/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"        
       end
       cms_yml = YAML::load_file("#{path}/current/config/domains/#{@account.directory}/cms.yml")
       cms_yml['website']['name'] = "#{@account.title.strip}"
