@@ -13,10 +13,10 @@ class Admin::AccountsController < AdminController
   end
   def create
     @account = Account.new(params[:account])
-    @account.directory = path_safe(@account.title)
     Account.create(:title => "master") unless Account.count > 0
     @master_settings = Account.master.first.setting
     if @account.save
+      @account.update_attributes(:directory => path_safe(@account.title))
       add_cms_to_shared
       add_basic_data if (!params[:oldaccount][:name].blank? or !params[:database][:database].blank?) #Don't add if there is an existing database for the account.
       redirect_to "http://#{self.request.domain}"
@@ -36,7 +36,7 @@ class Admin::AccountsController < AdminController
       system "ln -s #{path}/shared/config/domains/#{@account.directory} #{path}/current/config/domains/#{@account.directory}"
       unless params[:oldaccount][:name].blank?
         system "cp #{path}/shared/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"
-        system "cp #{path}/shared/config/database.yml #{path}/shared/config/domains/#{@account.directory}/database.yml"
+        system "cp #{path}`/shared/config/database.yml #{path}/shared/config/domains/#{@account.directory}/database.yml"
       else
         system "cp /data/#{params[:oldaccount][:name]}/shared/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"        
       end
