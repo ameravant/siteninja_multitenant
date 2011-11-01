@@ -35,10 +35,10 @@ class Admin::AccountsController < AdminController
       system "mv #{path}/current/config/domains/#{@account.directory} #{path}/shared/config/domains/"
       system "ln -s #{path}/shared/config/domains/#{@account.directory} #{path}/current/config/domains/#{@account.directory}"
       unless params[:oldaccount][:name].blank?
-        system "cp /data/shared/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"
-        system "cp /data/shared/config/database.yml #{path}/shared/config/domains/#{@account.directory}/database.yml"
+        system "cp #{path}/shared/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"
+        system "cp #{path}/shared/config/database.yml #{path}/shared/config/domains/#{@account.directory}/database.yml"
       else
-        system "cp /data/#{params[:oldaccount][:name]}/current/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"        
+        system "cp /data/#{params[:oldaccount][:name]}/shared/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"        
       end
       cms_yml = YAML::load_file("#{path}/current/config/domains/#{@account.directory}/cms.yml")
       cms_yml['website']['name'] = "#{@account.title.strip}"
