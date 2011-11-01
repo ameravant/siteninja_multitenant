@@ -1,1 +1,2 @@
-require 'subdomainify'
+require 'domainify'
+require 'validation_ext'

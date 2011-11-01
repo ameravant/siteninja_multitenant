@@ -8,16 +8,22 @@
 
 namespace :db do
   desc "Populate database with minimum data for new site."
-  task :populate_subdomainify_min => :environment do
+  task :populate_domainify_min => :environment do
+    Account.create!(:title => "master") if Account.all.empty?
     $CURRENT_ACCOUNT = Account.last
-    @cms_config = YAML::load_file("#{RAILS_ROOT}/config/subdomains/#{$CURRENT_ACCOUNT.subdomain}/cms.yml")
+    $MASTER_ACCOUNT = Account.first
+    if $CURRENT_ACCOUNT == $MASTER_ACCOUNT
+      @cms_config = YAML::load_file("#{RAILS_ROOT}/config/cms.yml")
+    else
+      @cms_config = YAML::load_file("#{RAILS_ROOT}/config/domains/#{$CURRENT_ACCOUNT.directory}/cms.yml")
+    end
     require 'populator'
     require 'faker'
 
     if Rails.env.production?
-      $DOMAIN_PATH = "http://#{$CURRENT_ACCOUNT}.name.#{@cms_config['website']['domain']}"
+      $DOMAIN_PATH = "http://#{$CURRENT_ACCOUNT}.title.#{@cms_config['website']['domain']}"
     else
-      $DOMAIN_PATH = "http://#{$CURRENT_ACCOUNT}.name.localhost:3000"
+      $DOMAIN_PATH = "http://#{$CURRENT_ACCOUNT}.title.localhost:3000"
     end
 
     def fake_events
@@ -145,7 +151,151 @@ namespace :db do
  } catch(err) {}</script>', 
        :account_id => $CURRENT_ACCOUNT.id
      )
-    
+    Template.create(
+      :title => "Global Template", :can_delete => false, :editable => false, :global => true,
+      :layout_top => 
+      '<div class="top-logo" id="wrapper-outer"> 
+        <div id="wrapper-middle"> 
+          <div id="wrapper-inner"> 
+            <div id="header-outer"> 
+              <div id="header-middle"> 
+                <div id="header-inner"> 
+                  {{header}}
+                </div> 
+              </div> 
+            </div>
+            {% if content_for_menu %}
+              <div id="menu-outer">
+                <div id="menu-middle">
+                  <ul id="menu-inner">
+                    {{menu}}
+                  </ul>
+                </div>
+              </div>
+            {% endif %}
+            {{submenu}}
+            {{banner}}
+            <div id="pre-content-outer">
+              <div id="pre-content-middle">
+                <div id="pre-content-inner">
+                  {{breadcrumbs}}
+                </div>
+              </div>
+            </div>
+            <div id="content-outer"> 
+              <div id="content-middle">
+                {% if content_for_side_column and content_for_side_column_2 %}
+                  {% assign content-columns = "with-side-columns" %}
+                {% elsif content_for_side_column or content_for_side_column_2 %}
+                  {% if content_for_side_column %}
+                    {% assign content-columns = "with-side-column" %}
+                  {% else %}
+                    {% assign content-columns = "with-side-column-2" %}
+                  {% endif %}
+                {% endif %}
+                <div class="{{content-columns}}" id="content-inner">
+                  {{wide_feature_box}}
+                  {% if content_for_side_column_2 %}
+                    <div class="sidebar" id="side-column-2">{{side_column_2}}</div>
+                  {% endif %}
+                  <div id="main-column">',
+      :layout_bottom => 
+      '            </div> 
+                  {% if content_for_side_column %}
+                    <div class="sidebar" id="side-column"> 
+                      {{side_column}}
+                    </div> 
+                  {% endif %}
+                  <div class="clear"></div> 
+                </div> 
+              </div> 
+            </div> 
+            <div id="footer-outer"> 
+              <div id="footer-middle"> 
+                <div id="footer-inner"> 
+                  {{footer_menu}}
+                  {{footer_text}}
+                  <div id="footer_credits">
+                    Powered by <a href="http://www.site-ninja.com">SiteNinja CMS</a>.
+                  </div>
+                </div> 
+              </div> 
+            </div> 
+          </div> 
+        </div> 
+      </div>',
+      :article_show => 
+      '<h1>{{title}}</h1>
+      <div class="article_posted_info">
+        By {{author}} on {{date}} at {{time}} in {{article.list_of_article_categories}}
+      </div>
+      {% if article.show_description == true %}
+        <div id="article-description">
+          {{article.description}}
+        </div>
+      {% endif %}
+      <div class="article_body">
+        {{body}}
+      </div>
+      {{attachments}}
+      <div id="share-options">
+        {{sharethis}}
+      </div>
+      <div>{{comments}}</div>',
+      :small_article_for_index => 
+      '<h2><a href="{{article.path}}">{{article.title}}</a></h2>
+      <div class="article_for_list">
+        <div class="article_posted_info">
+          <span class="hmenu">By {{article.author}} on {{article.date}} at {{article.time}} {{article.list_of_article_categories}}</span>
+        </div>
+        <div class="article_body">{{article.blurb | simple_format}}</div>
+        <a href="/article/194-website-redesign-before-and-after">Read more...</a>
+        <div class="clear"></div>
+      </div>',
+      :medium_article_for_index => 
+      '<h2><a href="{{article.path}}">{{article.title}}</a></h2>
+      <div class="article_for_list">
+        {% if article.image_path %}
+          <div class="images">
+            <a href="{{article.path}}"><img src="{{article.image_path}}" alt="{{article.title}}" title="{{article.title}}" /></a>
+            <div class="clear"></div>
+          </div>
+        {% endif %}
+        <div class="article_posted_info">
+          <span class="hmenu">By {{article.author}} on {{article.date}} at {{article.time}} {{article.list_of_article_categories}}</span>
+        </div>
+        <div class="article_body">{{article.blurb | simple_format}}</div>
+        <a href="/article/194-website-redesign-before-and-after">Read more...</a>
+        <div class="clear"></div>
+      </div>',
+      :large_article_for_index => 
+      '<h2><a href="{{article.path}}">{{article.title}}</a></h2>
+      <div class="article_for_list">
+        {% if article.large_image_path %}
+          <a href="{{article.path}}"><img src="{{article.large_image_path}}" alt="{{article.title}}" title="{{article.title}}" /></a>
+        {% endif %}
+        <div class="article_posted_info">
+          <span class="hmenu">By {{article.author}} on {{article.date}} at {{article.time}} {{article.list_of_article_categories}}</span>
+        </div>
+        <div class="article_body">{{article.blurb | simple_format}}</div>
+        <a href="/article/194-website-redesign-before-and-after">Read more...</a>
+        <div class="clear"></div>
+      </div>',
+      :articles_index =>
+      '<h1>
+        {% if tag %}
+          Articles by tag: {{ tag }}
+        {% elsif author %}
+          Articles by author: {{ author }}
+        {% elsif month %}
+          Articles by month: {{ month }}
+        {% else %}
+          {{ blog_title }}
+        {% endif %}
+      </h1>
+      {{ articles_list }}',
+      :account_id => $CURRENT_ACCOUNT.id
+    )
     add_pages
     FeaturableSection.create(:title => "Home Page Feature Box", :image_required => true, :site_wide => false, :account_id => $CURRENT_ACCOUNT.id)
 # This adds Featurable Section backend needed for a new site to have a homepage feature box

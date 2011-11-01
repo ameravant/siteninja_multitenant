@@ -4,9 +4,13 @@ class Account < ActiveRecord::Base
     has_many klass.table_name.to_sym
   end
   has_one :setting
-  named_scope :master, :conditions => "subdomain is null AND name = 'master'"
+  named_scope :master, :conditions => "domain is null AND title = 'master'"
 
   def is_master?
-    self.name == 'master' && self.subdomain.nil?
+    self.title == 'master' && self.domain.nil?
+  end
+  
+  def name
+    self.title
   end
 end

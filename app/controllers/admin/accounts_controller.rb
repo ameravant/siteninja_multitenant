@@ -1,4 +1,5 @@
 class Admin::AccountsController < AdminController
+  unloadable
   # before_filter :super_admin_check
   # before_filter :clear_current_account, :only => :index
   before_filter :find_account, :only => [:edit, :update, :delete]
@@ -12,13 +13,14 @@ class Admin::AccountsController < AdminController
   end
   def create
     @account = Account.new(params[:account])
-    Account.create(:name => "master") unless Account.count > 0
+    @account.directory = path_safe(@account.title)
+    Account.create(:title => "master") unless Account.count > 0
     @master_settings = Account.master.first.setting
     if @account.save
       add_cms_to_shared
-      add_basic_data
-      redirect_to "http://#{@account.subdomain}.#{self.request.domain}"
-      flash[:notice] = "You've created a successful account"
+      add_basic_data if (!params[:oldaccount][:name].blank? or !params[:database][:database].blank?) #Don't add if there is an existing database for the account.
+      redirect_to "http://#{self.request.domain}"
+      flash[:notice] = "You've successfully created a account"
     else
       render :new
     end
@@ -28,38 +30,81 @@ class Admin::AccountsController < AdminController
   def add_cms_to_shared
     if Rails.env.production?
       path = RAILS_ROOT.gsub(/(\/data\/)(\S*)\/releases\S*/, '\1\2')
-      make_initial_subdomain_folder(path) unless File.exists?("#{path}/config/subdomains") && File.exists?("#{path}/shared/config")
-      system "mkdir #{path}/current/config/subdomains/#{@account.subdomain}"
-      system "mv #{path}/current/config/subdomains/#{@account.subdomain} #{path}/shared/config/subdomains/"
-      system "ln -s #{path}/shared/config/subdomains/#{@account.subdomain} #{path}/current/config/subdomains/#{@account.subdomain}"
-      system "cp #{path}/current/config/cms.yml #{path}/shared/config/subdomains/#{@account.subdomain}/cms.yml"
-      cms_yml = YAML::load_file("#{path}/current/config/subdomains/#{@account.subdomain}/cms.yml")
-      cms_yml['website']['name'] = "#{@account.name.strip}"
-      File.open("#{path}/current/config/subdomains/#{@account.subdomain}/cms.yml", 'w') { |f| YAML.dump(cms_yml, f) }
+      make_initial_domain_folder(path) unless File.exists?("#{path}/config/domains") && File.exists?("#{path}/shared/config")
+      system "mkdir #{path}/current/config/domains/#{@account.directory}"
+      system "mv #{path}/current/config/domains/#{@account.directory} #{path}/shared/config/domains/"
+      system "ln -s #{path}/shared/config/domains/#{@account.directory} #{path}/current/config/domains/#{@account.directory}"
+      unless params[:oldaccount][:name].blank?
+        system "cp /data/shared/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"
+        system "cp /data/shared/config/database.yml #{path}/shared/config/domains/#{@account.directory}/database.yml"
+      else
+        system "cp #{path}/current/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"        
+      end
+      cms_yml = YAML::load_file("#{path}/current/config/domains/#{@account.directory}/cms.yml")
+      cms_yml['website']['name'] = "#{@account.title.strip}"
+      # Import Data From Existing Database
+      if !params[:oldaccount][:name].blank? or !params[:database][:database].blank?
+        cms_yml['site_settings']['secondary_database'] = true
+      else
+        params[:cms_config][:modules_blog] ? cms_yml['modules']['blog'] = true : cms_yml['modules']['blog'] = false
+        params[:cms_config][:modules_events] ? cms_yml['modules']['events'] = true : cms_yml['modules']['events'] = false
+        params[:cms_config][:modules_newsletters] ? cms_yml['modules']['newsletters'] = true : cms_yml['modules']['newsletters'] = false
+        params[:cms_config][:modules_documents] ? cms_yml['modules']['documents'] = true : cms_yml['modules']['documents'] = false
+        params[:cms_config][:modules_product] ? cms_yml['modules']['product'] = true : cms_yml['modules']['product'] = false
+        params[:cms_config][:modules_galleries] ? cms_yml['modules']['galleries'] = true : cms_yml['modules']['galleries'] = false
+        params[:cms_config][:modules_links] ? cms_yml['modules']['links'] = true : cms_yml['modules']['links'] = false
+        params[:cms_config][:modules_members] ? cms_yml['modules']['members'] = true : cms_yml['modules']['members'] = false
+        params[:cms_config][:features_feature_box] ? cms_yml['features']['feature_box'] = true : cms_yml['features']['feature_box'] = false
+        params[:cms_config][:features_testimonials] ? cms_yml['features']['testimonials'] = true : cms_yml['features']['testimonials'] = false
+      end
+      File.open("#{path}/current/config/domains/#{@account.directory}/cms.yml", 'w') { |f| YAML.dump(cms_yml, f) }
+      @database_yml = YAML::load_file("#{path}/current/config/database.yml")
+      if !params[:oldaccount][:name].blank?
+        @old_database_yml = YAML::load_file("#{path}/shared/config/domains/#{@account.directory}/database.yml")
+        @database_yml[@account.directory] = {"adapter" => @old_database_yml['production']['adapter'], "database" => @old_database_yml['production']['database'], "host" => @old_database_yml['production']['host'], "username" => @old_database_yml['production']['username'], "password" => @old_database_yml['production']['password']}
+      elsif !params[:database][:database].blank?
+        @database_yml[@account.directory] = {"adapter" => params[:database][:adapter], "database" => params[:database][:database], "host" => params[:database][:host], "username" => params[:database][:username], "password" => params[:database][:password]}
+      end
+      File.open("#{path}/current/config/database.yml", 'w') { |f| YAML.dump(@database_yml, f) }
     else
       path = RAILS_ROOT
-      make_initial_subdomain_folder(path) unless File.exists?("#{path}/config/subdomains") && File.exists?("#{path}/shared/config")
-      system "mkdir #{path}/config/subdomains/#{@account.subdomain}"
-      system "cp #{path}/config/cms.yml #{path}/config/subdomains/#{@account.subdomain}/cms.yml"
-      cms_yml = YAML::load_file("#{path}/config/subdomains/#{@account.subdomain}/cms.yml")
-      cms_yml['website']['name'] = "#{@account.name.strip}"
-      File.open("#{path}/config/subdomains/#{@account.subdomain}/cms.yml", 'w') { |f| YAML.dump(cms_yml, f) }
+      make_initial_domain_folder(path) unless File.exists?("#{path}/config/domains") && File.exists?("#{path}/shared/config")
+      system "mkdir #{path}/config/domains/#{@account.directory}"
+      system "cp #{path}/config/cms.yml #{path}/config/domains/#{@account.directory}/cms.yml"
+      cms_yml = YAML::load_file("#{path}/config/domains/#{@account.directory}/cms.yml")
+      cms_yml['website']['name'] = "#{@account.title.strip}"
+      params[:cms_config][:modules_blog] ? cms_yml['modules']['blog'] = true : cms_yml['modules']['blog'] = false
+      params[:cms_config][:modules_events] ? cms_yml['modules']['events'] = true : cms_yml['modules']['events'] = false
+      params[:cms_config][:modules_newsletters] ? cms_yml['modules']['newsletters'] = true : cms_yml['modules']['newsletters'] = false
+      params[:cms_config][:modules_documents] ? cms_yml['modules']['documents'] = true : cms_yml['modules']['documents'] = false
+      params[:cms_config][:modules_product] ? cms_yml['modules']['product'] = true : cms_yml['modules']['product'] = false
+      params[:cms_config][:modules_galleries] ? cms_yml['modules']['galleries'] = true : cms_yml['modules']['galleries'] = false
+      params[:cms_config][:modules_links] ? cms_yml['modules']['links'] = true : cms_yml['modules']['links'] = false
+      params[:cms_config][:modules_members] ? cms_yml['modules']['members'] = true : cms_yml['modules']['members'] = false
+      params[:cms_config][:features_feature_box] ? cms_yml['features']['feature_box'] = true : cms_yml['features']['feature_box'] = false
+      params[:cms_config][:features_testimonials] ? cms_yml['features']['testimonials'] = true : cms_yml['features']['testimonials'] = false
+      File.open("#{path}/config/domains/#{@account.directory}/cms.yml", 'w') { |f| YAML.dump(cms_yml, f) }
+      @database_yml = YAML::load_file("#{path}/config/database.yml")
+      @database_yml[@account.directory] = {"adapter" => params[:database][:adapter], "database" => params[:database][:database], "host" => params[:database][:host], "username" => params[:database][:username], "password" => params[:database][:password]}
+      File.open("#{path}/config/database.yml", 'w') { |f| YAML.dump(@database_yml, f) }
     end
   end
   
-  def make_initial_subdomain_folder(path)
+  def make_initial_domain_folder(path)
     if Rails.env.production?
-      system "mkdir #{path}/current/config/subdomains" unless File.exists?("#{path}/shared/config/subdomains")
-      system "mv #{path}/current/config/subdomains #{path}/shared/config/subdomains" unless File.exists?("#{path}/shared/config/subdomains")
-      system "ln -s #{path}/shared/config/subdomains #{path}/current/config/subdomains"
+      system "mkdir #{path}/current/config/domains" unless File.exists?("#{path}/shared/config/domains")
+      system "mv #{path}/current/config/domains #{path}/shared/config/domains" unless File.exists?("#{path}/shared/config/domains")
+      system "ln -s #{path}/shared/config/domains #{path}/current/config/domains"
     else
-      system "mkdir #{path}/config/subdomains" unless File.exists?("#{path}/shared/config/subdomains")
+      system "mkdir #{path}/config/domains" unless File.exists?("#{path}/shared/config/domains")
     end
   end
   def add_basic_data
     clear_current_account
-    system "rake db:populate_subdomainify_min"
-    Account.last.setting.update_attributes(@master_settings.attributes.merge(:account_id => @account.id))
+    system "rake db:populate_domainify_min"
+    s = @master_settings.clone
+    s.account_id = @account.id
+    s.save
   end
   def clear_current_account
     $CURRENT_ACCOUNT = nil

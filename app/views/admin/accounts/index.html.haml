@@ -1,0 +1,20 @@
+%h1 Account Management
+.box
+  %span.hmenu
+    = icon "Plus", new_admin_account_path
+    = link_to "Make a new account", new_admin_account_path
+
+%table.full-width
+  %thead
+    %tr 
+      %th Account Title
+      %th{:style => "width: 50px"} Options
+  - for account in @accounts
+    %tr{:class => cycle('odd','even'), :id => "#{dom_id(account)}"}
+      %td
+        = link_to(account.title, edit_admin_account_path(account.id))
+      %td
+        = icon "Write", edit_admin_account_path(account.id)
+        - if !account.is_master?
+          = trash_icon(account, admin_account_path(account), "#{account.title}")
+      

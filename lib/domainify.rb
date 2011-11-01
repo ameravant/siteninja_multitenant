@@ -1,9 +1,9 @@
-require 'subdomainify/validation_ext.rb'
-require 'subdomainify/permalink_fu_replacement.rb'
-require 'subdomainify/konstants.rb'
-require 'helpers/subdomains_helper.rb'
+require 'domainify/validation_ext.rb'
+require 'domainify/permalink_fu_replacement.rb'
+require 'domainify/konstants.rb'
+require 'helpers/domains_helper.rb'
 include Konstants
-module Subdomainify #:nodoc:
+module Domainify #:nodoc:
   def self.included(base)
     base.extend(ClassMethods)
   end
@@ -14,7 +14,7 @@ module Subdomainify #:nodoc:
       #confirm menus are getting the correct account_id
       after_create :update_menu_account_id
       after_save :update_menu_account_id
-      include Subdomainify::InstanceMethods
+      include Domainify::InstanceMethods
     end
     #methods only for settings
     def setting_extra_methods
@@ -26,7 +26,7 @@ module Subdomainify #:nodoc:
     end
     #methods only for people
     def person_extra_methods
-      include Subdomainify::InstanceMethods
+      include Domainify::InstanceMethods
       #confirm account id is correct on create of user
       after_create :update_user_account_id
     end
@@ -36,7 +36,7 @@ module Subdomainify #:nodoc:
       has_many klass.table_name.to_sym
     end
     #this is added to all models      
-    def subdomainify 
+    def domainify 
       #add the $CURRENT_ACCOUNT id to every new record
       before_validation :add_account_id
       #associate it with the $CURRENT_ACCOUNT
@@ -58,7 +58,7 @@ module Subdomainify #:nodoc:
           super(*args)
         end
       end
-      include Subdomainify::InstanceMethods
+      include Domainify::InstanceMethods
     end
   end
   module InstanceMethods
@@ -79,8 +79,8 @@ module Subdomainify #:nodoc:
         self.account_id = $CURRENT_ACCOUNT.id
       end
     end
-    def subdomain
-      self.account_id.blank? ? nil : self.account.subdomain
+    def domain
+      self.account_id.blank? ? nil : self.account.domain
     end
     def update_user_account_id
       self.user.update_attributes(:account_id => self.account_id) if self.user 
@@ -88,13 +88,13 @@ module Subdomainify #:nodoc:
   end
 end
 
-ActiveRecord::Base.send(:include, Subdomainify)
+ActiveRecord::Base.send(:include, Domainify)
 #make konstants available to migrations so we can dynamically add account_id to present tables
 ActiveRecord::Migration.send(:include, Konstants) 
-#dynamically send the subdomainify methods to present models
+#dynamically send the domainify methods to present models
 for table_name in TableNames  
   if ActiveRecord::Base.connection.tables.include?(table_name)
-    table_name.camelcase.singularize.constantize.send(:subdomainify) 
+    table_name.camelcase.singularize.constantize.send(:domainify) 
   end
 end
 #add additional extra methods to other models

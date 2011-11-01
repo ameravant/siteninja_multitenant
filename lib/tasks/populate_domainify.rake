@@ -9,17 +9,17 @@
 
 namespace :db do
   desc "Populate database with sweet, sweet dummy data."
-  task :populate_subdomainify => :environment do
+  task :populate_domainify => :environment do
     @cms_config = YAML::load_file("#{RAILS_ROOT}/config/cms.yml")
     require 'populator'
     require 'faker'
-
+    
     # these file contains video urls, pirate paragraphs, and useful methods like making permalinks.
     require "#{RAILS_ROOT}/vendor/plugins/siteninja/siteninja_core/lib/tasks/populate_urls.rb"
     require "#{RAILS_ROOT}/vendor/plugins/siteninja/siteninja_core/lib/tasks/populate_methods.rb"
-    Account.create!(:name => "master")
-    Account.create!(:name => "jason", :subdomain => "jason")
-    Account.create!(:name => "dave", :subdomain => "dave")
+    Account.create!(:title => "master")
+    Account.create!(:title => "test1", :domain => "test1.com")
+    Account.create!(:title => "test2", :domain => "test2.com")
     
     if @cms_config['modules']['blog']
       def fake_articles
