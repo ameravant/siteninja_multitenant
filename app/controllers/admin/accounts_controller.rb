@@ -16,7 +16,6 @@ class Admin::AccountsController < AdminController
     Account.create(:title => "master") unless Account.count > 0
     @master_settings = Account.master.first.setting
     if @account.save
-      @account.update_attributes(:directory => path_safe(@account.title))
       add_cms_to_shared
       add_basic_data if (!params[:oldaccount][:name].blank? or !params[:database][:database].blank?) #Don't add if there is an existing database for the account.
       redirect_to "http://#{self.request.domain}"
@@ -29,6 +28,7 @@ class Admin::AccountsController < AdminController
   private
   def add_cms_to_shared
     if Rails.env.production?
+      @account.update_attributes(:directory => path_safe(@account.title))
       path = RAILS_ROOT.gsub(/(\/data\/)(\S*)\/releases\S*/, '\1\2')
       make_initial_domain_folder(path) unless File.exists?("#{path}/config/domains") && File.exists?("#{path}/shared/config")
       system "mkdir #{path}/current/config/domains/#{@account.directory}"
@@ -38,7 +38,8 @@ class Admin::AccountsController < AdminController
         system "cp #{path}/shared/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"
         system "cp #{path}`/shared/config/database.yml #{path}/shared/config/domains/#{@account.directory}/database.yml"
       else
-        system "cp /data/#{params[:oldaccount][:name]}/shared/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"        
+        system "cp /data/#{params[:oldaccount][:name]}/shared/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"      
+        @account.update_attributes(:separate_db => true)  
       end
       cms_yml = YAML::load_file("#{path}/current/config/domains/#{@account.directory}/cms.yml")
       cms_yml['website']['name'] = "#{@account.title.strip}"
