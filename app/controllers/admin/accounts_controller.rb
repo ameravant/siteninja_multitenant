@@ -36,7 +36,7 @@ class Admin::AccountsController < AdminController
       system "ln -s #{path}/shared/config/domains/#{@account.directory} #{path}/current/config/domains/#{@account.directory}"
       unless params[:oldaccount][:name].blank?
         system "cp #{path}/shared/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"
-        system "cp #{path}`/shared/config/database.yml #{path}/shared/config/domains/#{@account.directory}/database.yml"
+        system "cp #{path}/shared/config/database.yml #{path}/shared/config/domains/#{@account.directory}/database.yml"
       else
         system "cp /data/#{params[:oldaccount][:name]}/shared/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"      
         @account.update_attributes(:separate_db => true)  
