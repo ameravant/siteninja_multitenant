@@ -34,11 +34,11 @@ class Admin::AccountsController < AdminController
       system "mkdir #{path}/current/config/domains/#{@account.directory}"
       system "mv #{path}/current/config/domains/#{@account.directory} #{path}/shared/config/domains/"
       system "ln -s #{path}/shared/config/domains/#{@account.directory} #{path}/current/config/domains/#{@account.directory}"
-      unless params[:oldaccount][:name].blank?
+      if params[:oldaccount][:name].blank?
         system "cp #{path}/shared/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"
-        system "cp #{path}/shared/config/database.yml #{path}/shared/config/domains/#{@account.directory}/database.yml"
       else
-        system "cp /data/#{params[:oldaccount][:name]}/shared/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"      
+        system "cp /data/#{params[:oldaccount][:name]}/shared/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"   
+        system "cp /data/#{params[:oldaccount][:name]}/shared/config/database.yml #{path}/shared/config/domains/#{@account.directory}/database.yml"   
         @account.update_attributes(:separate_db => true)  
       end
       cms_yml = YAML::load_file("#{path}/current/config/domains/#{@account.directory}/cms.yml")
