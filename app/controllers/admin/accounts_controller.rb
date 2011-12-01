@@ -17,9 +17,9 @@ class Admin::AccountsController < AdminController
     @master_settings = Account.master.first.setting
     if @account.save
       add_cms_to_shared
-      add_basic_data if (!params[:oldaccount][:name].blank? or !params[:database][:database].blank?) #Don't add if there is an existing database for the account.
-      redirect_to "http://#{self.request.domain}"
-      flash[:notice] = "You've successfully created a account"
+      add_basic_data# if (!params[:oldaccount][:name].blank? or !params[:database][:database].blank?) #Don't add if there is an existing database for the account.
+      redirect_to admin_accounts_path #{}"http://#{self.request.domain}"
+      flash[:notice] = "You've successfully created an account"
     else
       render :new
     end
@@ -68,6 +68,7 @@ class Admin::AccountsController < AdminController
       end
       File.open("#{path}/current/config/database.yml", 'w') { |f| YAML.dump(@database_yml, f) }
     else
+      @account.update_attributes(:directory => path_safe(@account.title))
       path = RAILS_ROOT
       make_initial_domain_folder(path) unless File.exists?("#{path}/config/domains") && File.exists?("#{path}/shared/config")
       system "mkdir #{path}/config/domains/#{@account.directory}"

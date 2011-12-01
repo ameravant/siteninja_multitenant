@@ -12,63 +12,38 @@ namespace :db do
     Account.create!(:title => "master") if Account.all.empty?
     $CURRENT_ACCOUNT = Account.last
     $MASTER_ACCOUNT = Account.first
+    directory = Account.last.title.gsub(/\W+/, ' ').strip.downcase.gsub(/\ +/, '-')
     if $CURRENT_ACCOUNT == $MASTER_ACCOUNT
       @cms_config = YAML::load_file("#{RAILS_ROOT}/config/cms.yml")
     else
-      @cms_config = YAML::load_file("#{RAILS_ROOT}/config/domains/#{$CURRENT_ACCOUNT.directory}/cms.yml")
+      @cms_config = YAML::load_file("#{RAILS_ROOT}/config/domains/#{directory}/cms.yml")
     end
     require 'populator'
     require 'faker'
 
-    if Rails.env.production?
-      $DOMAIN_PATH = "http://#{$CURRENT_ACCOUNT}.title.#{@cms_config['website']['domain']}"
-    else
-      $DOMAIN_PATH = "http://#{$CURRENT_ACCOUNT}.title.localhost:3000"
-    end
-
-    def fake_events
-      puts 'Faking events...'
-      Event.populate 4 do |e|
-        e.name = Populator.words(2..5)
-        e.address = "#{rand(1400)+100} State St, Santa Barbara, CA"
-        e.description = generate_random_body_content
-        e.event_date_and_time = 1.month.ago..3.months.from_now
-        e.user_id = $USERS.rand.id
-        if rand(2) == 0
-          e.registration = true
-          e.allow_cash = [true, false]
-          e.allow_card = [true, false]
-          e.allow_check = [true, false]
-          e.check_instructions = Populator.paragraphs(1) if e.allow_check
-          if rand(2) == 0
-            e.registration_limit = [10, 50, 100, 200, 500]
-            e.registration_closed_text = Populator.paragraphs(1)
-          end
-        end
-        e.account_id = $CURRENT_ACCOUNT.id
-      end
-
-      puts 'Making permalinks...'
-      Event.all.each { |event| event.update_attribute(:permalink, make_permalink(event.name)) }
-    end
+    # if Rails.env.production?
+    #   $DOMAIN_PATH = "http://#{$CURRENT_ACCOUNT}.title.#{@cms_config['website']['domain']}"
+    # else
+    #   $DOMAIN_PATH = "http://#{$CURRENT_ACCOUNT}.title.localhost:3000"
+    # end
     
     def add_pages
       puts "Creating pages..."
 
       home = Page.create(:title => 'Home', :body => 'home',
-        :meta_title => "Home", :permalink => "home", :can_delete => false, :position => 1, :account_id => $CURRENT_ACCOUNT.id)
-        Page.create(:title => 'About Us', :body => 'About', :meta_title => "About #{@cms_config['website']['name']}", :account_id => $CURRENT_ACCOUNT.id)
-        Page.create(:title => 'Blog', :meta_title => 'Blog', :body => "blog", :permalink => "blog", :can_delete => false, :account_id => $CURRENT_ACCOUNT.id) if @cms_config['modules']['blog']
-        Page.create(:title => 'Images', :meta_title => 'Galleries', :body => "galleries", :permalink => "galleries", :can_delete => false, :account_id => $CURRENT_ACCOUNT.id) if @cms_config['modules']['galleries']
-        Page.create(:title => 'Products', :meta_title => 'Products', :body => "Products", :permalink => "products", :can_delete => false, :account_id => $CURRENT_ACCOUNT.id) if @cms_config['modules']['product']
-        contact = Page.create( :title => 'Contact Us', :body => "<h1>Contact #{@cms_config['website']['name']}</h1>", :meta_title => "Contact #{@cms_config['website']['name']}", :permalink => "inquire", :account_id => $CURRENT_ACCOUNT.id)
-        Page.create(:title => 'Members', :meta_title => 'members', :body => "members", :permalink => "members", :can_delete => true, :account_id => $CURRENT_ACCOUNT.id) if @cms_config['modules']['members']
-        Page.create(:title => 'Profiles', :meta_title => 'profiles', :body => "profiles", :permalink => "profiles", :can_delete => true, :account_id => $CURRENT_ACCOUNT.id) if @cms_config['modules']['profiles']
-        Page.create(:title => 'Links', :meta_title => 'Links', :body => "links", :permalink => "links", :can_delete => false, :account_id => $CURRENT_ACCOUNT.id) if @cms_config['modules']['links']
-        Page.create(:title => 'Testimonials', :body => 'Testimonials', :meta_title => 'Testimonials', :show_in_footer => true, :can_delete => false, :parent_id => home.id, :account_id => $CURRENT_ACCOUNT.id) if @cms_config['features']['testimonials']
-        Page.create(:parent_id => contact.id, :title => 'Contact Us - Thank You', :body => 'Thank you for your inquiry. We usually respond within 24 hours.', :meta_title => "Message sent", :permalink => "inquiry_received", :status => 'hidden', :show_in_footer => false, :account_id => $CURRENT_ACCOUNT.id)
-        Page.create(:parent_id => contact.id, :title => 'Privacy Policy',:show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => 'This page can be helpful when creating a privacy policy <a href="http://www.freeprivacypolicy.com/privacy.php">http://www.freeprivacypolicy.com/privacy.php</a>', :meta_title => "Privacy Policy", :account_id => $CURRENT_ACCOUNT.id)
-        Page.create(:parent_id => contact.id, :title => 'Terms of Use', :show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => 'Terms of Use', :status => 'hidden', :meta_title => "Terms of Use", :account_id => $CURRENT_ACCOUNT.id)
+        :meta_title => "Home", :permalink => "home", :can_delete => false, :position => 1, :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_side.id, :main_column_id => @homepage_column.id)
+        Page.create(:title => 'About Us', :body => 'About', :meta_title => "About #{@cms_config['website']['name']}", :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_side.id, :main_column_id => @default_column.id)
+        Page.create(:title => 'Blog', :meta_title => 'Blog', :body => "blog", :permalink => "blog", :can_delete => false, :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_article_side.id, :main_column_id => @default_column.id) if @cms_config['modules']['blog']
+        Page.create(:title => 'Images', :meta_title => 'Galleries', :body => "galleries", :permalink => "galleries", :can_delete => false, :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_side.id, :main_column_id => @default_column.id) if @cms_config['modules']['galleries']
+        Page.create(:title => 'Products', :meta_title => 'Products', :body => "Products", :permalink => "products", :can_delete => false, :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_side.id, :main_column_id => @default_column.id) if @cms_config['modules']['product']
+        contact = Page.create( :title => 'Contact Us', :body => "<h1>Contact #{@cms_config['website']['name']}</h1>", :meta_title => "Contact #{@cms_config['website']['name']}", :permalink => "inquire", :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_side.id, :main_column_id => @default_column.id)
+        Page.create(:title => 'Members', :meta_title => 'members', :body => "members", :permalink => "members", :can_delete => true, :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_side.id, :main_column_id => @default_column.id) if @cms_config['modules']['members']
+        Page.create(:title => 'Profiles', :meta_title => 'profiles', :body => "profiles", :permalink => "profiles", :can_delete => true, :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_side.id, :main_column_id => @default_column.id) if @cms_config['modules']['profiles']
+        Page.create(:title => 'Links', :meta_title => 'Links', :body => "links", :permalink => "links", :can_delete => false, :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_side.id, :main_column_id => @default_column.id) if @cms_config['modules']['links']
+        Page.create(:title => 'Testimonials', :body => 'Testimonials', :meta_title => 'Testimonials', :show_in_footer => true, :can_delete => false, :parent_id => home.id, :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_side.id, :main_column_id => @default_column.id) if @cms_config['features']['testimonials']
+        Page.create(:parent_id => contact.id, :title => 'Contact Us - Thank You', :body => 'Thank you for your inquiry. We usually respond within 24 hours.', :meta_title => "Message sent", :permalink => "inquiry_received", :status => 'hidden', :show_in_footer => false, :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_side.id, :main_column_id => @default_column.id)
+        Page.create(:parent_id => contact.id, :title => 'Privacy Policy',:show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => 'This page can be helpful when creating a privacy policy <a href="http://www.freeprivacypolicy.com/privacy.php">http://www.freeprivacypolicy.com/privacy.php</a>', :meta_title => "Privacy Policy", :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_side.id, :main_column_id => @default_column.id)
+        Page.create(:parent_id => contact.id, :title => 'Terms of Use', :show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => 'Terms of Use', :status => 'hidden', :meta_title => "Terms of Use", :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_side.id, :main_column_id => @default_column.id)
         for page in Page.all
           if page.menus.empty?
             menu = page.menus.new
@@ -123,13 +98,29 @@ namespace :db do
     user.person_id = dave.id
     user.save
     
-    ColumnSection.create(:title => "Site Search", :section_type => "shared", :can_delete => false, :partial_name => "search_for_side_column", :account_id => $CURRENT_ACCOUNT.id)
-    ColumnSection.create(:title => "Newsletter Signup", :section_type => "newsletters", :can_delete => false, :partial_name => "signup_for_side_column", :account_id => $CURRENT_ACCOUNT.id) if @cms_config["modules"]["newsletters"]
-    ColumnSection.create(:title => @cms_config['site_settings']['blog_title'], :section_type => "articles", :count => 5, :can_delete => false, :partial_name => "articles_for_side_column", :show_blurb => true, :account_id => $CURRENT_ACCOUNT.id) if @cms_config["modules"]["blog"]
-    ColumnSection.create(:title => "#{@cms_config['site_settings']['article_title']} Categories", :section_type => "article_categories", :count => 5, :can_delete => false, :account_id => $CURRENT_ACCOUNT.id) if @cms_config["modules"]["blog"]
-    ColumnSection.create(:title => @cms_config["site_settings"]["events_title"], :section_type => "events", :count => 5, :can_delete => false, :show_blurb => true, :account_id => $CURRENT_ACCOUNT.id) if @cms_config["modules"]["events"]
-    ColumnSection.create(:title => "Testimonial", :section_type => "testimonials", :count => 1, :can_delete => false, :account_id => $CURRENT_ACCOUNT.id) if @cms_config["features"]["testimonials"]
-    ColumnSection.create(:title => "Content Area", :section_type => "content", :body => Setting.first.side_column_text, :account_id => $CURRENT_ACCOUNT.id) if !Setting.all.empty?
+    
+    feature = ColumnSectionType.first(:conditions => {:title => "Feature Box"})
+    body_column = ColumnSectionType.first(:conditions => {:title => "Body Content"}) 
+    @default_side = Column.create(:title => "Default Side Column", :account_id => $CURRENT_ACCOUNT.id, :column_location => "side_column", :can_delete => false)
+    @default_article_side = Column.create(:title => "Default Article Side Column", :column_location => "side_column", :can_delete => false)
+    @homepage_column = Column.create(:title => "Homepage", :column_location => "main_column", :can_delete => false)
+    ColumnSection.create(:title => "Feature Box", :column_section_type_id => feature.id, :column_id => @homepage_column.id, :position => 1)
+    ColumnSection.create(:title => "Body Content", :column_section_type_id => body_column.id, :column_id => @homepage_column.id, :position => 2)
+    @default_column = Column.create(:title => "Default", :column_location => "main_column", :can_delete => false)
+    ColumnSection.create(:title => "Body Content", :column_section_type_id => body_column.id, :column_id => @default_column.id, :position => 1)
+    ColumnSection.create(:title => "Site Search", :section_type => "shared", :can_delete => false, :partial_name => "search_for_side_column", :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_side.id, :column_section_type_id => ColumnSectionType.first(:conditions => {:partial_name => "search_for_side_column"}))
+    ColumnSection.create(:title => "Newsletter Signup", :section_type => "newsletters", :can_delete => false, :partial_name => "signup_for_side_column", :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_side.id, :column_section_type_id => ColumnSectionType.first(:conditions => {:partial_name => "signup_for_side_column"}).id) if @cms_config["modules"]["newsletters"]
+    ColumnSection.create(:title => @cms_config['site_settings']['blog_title'], :section_type => "articles", :count => 5, :can_delete => false, :partial_name => "articles_for_side_column", :show_blurb => true, :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_side.id, :column_section_type_id => ColumnSectionType.first(:conditions => {:partial_name => "articles_for_side_column"}).id) if @cms_config["modules"]["blog"]
+    ColumnSection.create(:title => "#{@cms_config['site_settings']['article_title']} Categories", :section_type => "article_categories", :count => 5, :can_delete => false, :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_side.id, :column_section_type_id => ColumnSectionType.first(:conditions => {:partial_name => "article_categories_for_side_column"}).id) if @cms_config["modules"]["blog"]
+    ColumnSection.create(:title => @cms_config["site_settings"]["events_title"], :section_type => "events", :count => 5, :can_delete => false, :show_blurb => true, :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_side.id, :column_section_type_id => ColumnSectionType.first(:conditions => {:partial_name => "article_categories_for_side_column"}).id) if @cms_config["modules"]["events"]
+    ColumnSection.create(:title => "Testimonial", :section_type => "testimonials", :count => 1, :can_delete => false, :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_side.id, :column_section_type_id => ColumnSectionType.first(:conditions => {:title => "Testimonial"}).id) if @cms_config["features"]["testimonials"]
+    
+    ColumnSection.create(:column_id => @default_article_side.id, :column_section_type_id => ColumnSectionType.first(:conditions => {:title => "Article Categories"}).id, :count => 5, :title => "Article Categories")
+    ColumnSection.create(:column_id => @default_article_side.id, :column_section_type_id => ColumnSectionType.first(:conditions => {:title => "Article Archive"}).id, :count => 5, :title => "Article Archive")
+    ColumnSection.create(:column_id => @default_article_side.id, :column_section_type_id => ColumnSectionType.first(:conditions => {:title => "Article Authors"}).id, :count => 5, :title => "Article Authors")
+    ColumnSection.create(:column_id => @default_article_side.id, :column_section_type_id => ColumnSectionType.first(:conditions => {:title => "Article Tags"}).id, :count => 5, :title => "Article Tags")
+
+    
     
     
      Setting.create(
