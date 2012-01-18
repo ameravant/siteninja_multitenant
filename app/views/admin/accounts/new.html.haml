@@ -1,3 +1,2 @@
-- form_for :account, :url => admin_accounts_path, :html => { :onsubmit => "form_submitted();" } do |f|
-  = render :partial => "form", :locals => {:f => f}
-  =f.submit "Add new account"
+%h1= large_icon('Picture') + ' ' + "Create a New Account"
+= render :partial => 'form'

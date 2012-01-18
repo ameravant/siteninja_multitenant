@@ -1,6 +1,6 @@
 class Admin::AccountsController < AdminController
   unloadable
-  # before_filter :super_admin_check
+  before_filter :super_admin_check
   # before_filter :clear_current_account, :only => :index
   before_filter :find_account, :only => [:edit, :update, :delete]
   def index
@@ -8,11 +8,13 @@ class Admin::AccountsController < AdminController
   end
   def new
     @account = Account.new
+    @current_config = @cms_config
   end
   def edit
   end
   def create
     @account = Account.new(params[:account])
+    @current_config = @cms_config
     Account.create(:title => "master") unless Account.count > 0
     @master_settings = Account.master.first.setting
     if @account.save
@@ -22,6 +24,28 @@ class Admin::AccountsController < AdminController
       flash[:notice] = "You've successfully created an account"
     else
       render :new
+    end
+  end
+  
+  def update
+    if @account.update_attributes(params[:account])
+      path = RAILS_ROOT.gsub(/(\/data\/)(\S*)\/releases\S*/, '\1\2')
+      cms_yml = YAML::load_file("#{RAILS_ROOT}/config/domains/#{@account.directory}/cms.yml")
+      params[:cms_config][:modules_blog] ? cms_yml['modules']['blog'] = true : cms_yml['modules']['blog'] = false
+      params[:cms_config][:modules_events] ? cms_yml['modules']['events'] = true : cms_yml['modules']['events'] = false
+      params[:cms_config][:modules_newsletters] ? cms_yml['modules']['newsletters'] = true : cms_yml['modules']['newsletters'] = false
+      params[:cms_config][:modules_documents] ? cms_yml['modules']['documents'] = true : cms_yml['modules']['documents'] = false
+      params[:cms_config][:modules_product] ? cms_yml['modules']['product'] = true : cms_yml['modules']['product'] = false
+      params[:cms_config][:modules_galleries] ? cms_yml['modules']['galleries'] = true : cms_yml['modules']['galleries'] = false
+      params[:cms_config][:modules_links] ? cms_yml['modules']['links'] = true : cms_yml['modules']['links'] = false
+      params[:cms_config][:modules_members] ? cms_yml['modules']['members'] = true : cms_yml['modules']['members'] = false
+      params[:cms_config][:features_feature_box] ? cms_yml['features']['feature_box'] = true : cms_yml['features']['feature_box'] = false
+      params[:cms_config][:features_testimonials] ? cms_yml['features']['testimonials'] = true : cms_yml['features']['testimonials'] = false
+      File.open("#{RAILS_ROOT}/config/domains/#{@account.directory}/cms.yml", 'w') { |f| YAML.dump(cms_yml, f) }
+      flash[:message] = "Account updated successfully."
+      redirect_to admin_accounts_path
+    else
+      render :action => "edit"        
     end
   end
   
@@ -86,9 +110,9 @@ class Admin::AccountsController < AdminController
       params[:cms_config][:features_feature_box] ? cms_yml['features']['feature_box'] = true : cms_yml['features']['feature_box'] = false
       params[:cms_config][:features_testimonials] ? cms_yml['features']['testimonials'] = true : cms_yml['features']['testimonials'] = false
       File.open("#{path}/config/domains/#{@account.directory}/cms.yml", 'w') { |f| YAML.dump(cms_yml, f) }
-      @database_yml = YAML::load_file("#{path}/config/database.yml")
-      @database_yml[@account.directory] = {"adapter" => params[:database][:adapter], "database" => params[:database][:database], "host" => params[:database][:host], "username" => params[:database][:username], "password" => params[:database][:password]}
-      File.open("#{path}/config/database.yml", 'w') { |f| YAML.dump(@database_yml, f) }
+      # @database_yml = YAML::load_file("#{path}/config/database.yml")
+      # @database_yml[@account.directory] = {"adapter" => params[:database][:adapter], "database" => params[:database][:database], "host" => params[:database][:host], "username" => params[:database][:username], "password" => params[:database][:password]}
+      # File.open("#{path}/config/database.yml", 'w') { |f| YAML.dump(@database_yml, f) }
     end
   end
   
@@ -113,9 +137,10 @@ class Admin::AccountsController < AdminController
     $CURRENT_ACCOUNT = Account.find(params[:account_id]) if params[:account_id]
   end
   def super_admin_check
-    redirect_to '/' unless current_user && current_user.login == "admin"
+    redirect_to '/' unless current_user && current_user.is_super_user
   end
   def find_account
     @account = Account.find(params[:id])
+    @current_config = YAML::load_file("#{RAILS_ROOT}/config/domains/#{@account.directory}/cms.yml")
   end
 end

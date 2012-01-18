@@ -1,64 +1,71 @@
-%fieldset
-  #main-details.options
-    #options
-      %h2 Modules
-      For new accounts only
-      .checkboxes
-        = check_box_tag 'cms_config[modules_blog]', @cms_config['modules']['blog'], @cms_config['modules']['blog']
-        = label_tag 'cms_config[modules_blog]', "Blog"
-        %br
-        = check_box_tag 'cms_config[modules_documents]', @cms_config['modules']['documents'], @cms_config['modules']['documents']
-        = label_tag 'cms_config[modules_documents]', "Documents"
-        %br
-        = check_box_tag 'cms_config[modules_events]', @cms_config['modules']['events'], @cms_config['modules']['events']
-        = label_tag 'cms_config[modules_events]', "Events"
-        %br
-        = check_box_tag 'cms_config[modules_product]', @cms_config['modules']['product'], @cms_config['modules']['product']
-        = label_tag 'cms_config[modules_product]', "Product Catalog"
-        %br
-        = check_box_tag 'cms_config[modules_galleries]', @cms_config['modules']['galleries'], @cms_config['modules']['galleries']
-        = label_tag 'cms_config[modules_galleries]', "Image Galleries"
-        %br
-        = check_box_tag 'cms_config[modules_newsletters]', @cms_config['modules']['newsletters'], @cms_config['modules']['newsletters']
-        = label_tag 'cms_config[modules_newsletters]', "Newsletters"
-        %br
-        = check_box_tag 'cms_config[modules_members]', @cms_config['modules']['members'], @cms_config['modules']['members']
-        = label_tag 'cms_config[modules_members]', "Members"
-        %br
-        = check_box_tag 'cms_config[modules_links]', @cms_config['modules']['links'], @cms_config['modules']['links']
-        = label_tag 'cms_config[modules_links]', "Links"
-        %br
-        = check_box_tag 'cms_config[features_testimonials]', @cms_config['features']['testimonials'], @cms_config['features']['testimonials']
-        = label_tag 'cms_config[features_testimonials]', "Testimonials"
-        %br
-        = check_box_tag 'cms_config[features_feature_box]', @cms_config['features']['feature_box'], @cms_config['features']['feature_box']
-        = label_tag 'cms_config[features_feature_box]', "Feature Box"
-  #main-form-options
-    %dl
-      %dt.form-label= f.label :title
-      %dd.form-option= f.text_field :title
-      %dt.form-label= f.label :domain, "Domains"
-      %dd.form-option
-        = f.text_field :domain, :size => "70"
-        .note 
-          All domains associated with the account, comma separated, without http://
+- form_for [:admin, @account] do |f|
+  %fieldset
+    #main-details.options
+      #options
+        %h3 Modules
+        - if !@account.id.blank?
+          .note Adding modules does not currently add the required placeholder pages.
+          
+        .checkboxes
+          = check_box_tag 'cms_config[modules_blog]', @current_config['modules']['blog'], @current_config['modules']['blog']
+          = label_tag 'cms_config[modules_blog]', "Blog"
           %br
-          %strong Example: "subdomain.domain.com, domain.com, parkdomain.domain.com"
-    %dl
-      %dt.form-label= label_tag 'oldaccount[name]', "Import Account Name"
-      %dd.form-option
-        = text_field_tag 'oldaccount[name]'
-        .note Fill in this field to import an existing account on the server running an independent app.
-      %dt.form-label= label_tag 'database[host]', "Host"
-      %dd.form-option= text_field_tag 'database[host]'
-      %dt.form-label= label_tag 'database[database]', "Database"
-      %dd.form-option= text_field_tag 'database[database]'
-      %dt.form-label= label_tag 'database[adapter]', "Adapter"
-      %dd.form-option= text_field_tag 'database[adapter]'
-      %dt.form-label= label_tag 'database[username]', "Username"
-      %dd.form-option= text_field_tag 'database[username]'
-      %dt.form-label= label_tag 'database[password]', "Password"
-      %dd.form-option= text_field_tag 'database[password]'
-- content_for :head do
-  %style{:type => "text/css"}
-    div#main-form-options { width: 520px; float: left; }
+          = check_box_tag 'cms_config[modules_documents]', @current_config['modules']['documents'], @current_config['modules']['documents']
+          = label_tag 'cms_config[modules_documents]', "Documents"
+          %br
+          = check_box_tag 'cms_config[modules_events]', @current_config['modules']['events'], @current_config['modules']['events']
+          = label_tag 'cms_config[modules_events]', "Events"
+          %br
+          = check_box_tag 'cms_config[modules_product]', @current_config['modules']['product'], @current_config['modules']['product']
+          = label_tag 'cms_config[modules_product]', "Product Catalog"
+          %br
+          = check_box_tag 'cms_config[modules_galleries]', @current_config['modules']['galleries'], @current_config['modules']['galleries']
+          = label_tag 'cms_config[modules_galleries]', "Image Galleries"
+          %br
+          = check_box_tag 'cms_config[modules_newsletters]', @current_config['modules']['newsletters'], @current_config['modules']['newsletters']
+          = label_tag 'cms_config[modules_newsletters]', "Newsletters"
+          %br
+          = check_box_tag 'cms_config[modules_members]', @current_config['modules']['members'], @current_config['modules']['members']
+          = label_tag 'cms_config[modules_members]', "Members"
+          %br
+          = check_box_tag 'cms_config[modules_links]', @current_config['modules']['links'], @current_config['modules']['links']
+          = label_tag 'cms_config[modules_links]', "Links"
+        %h3 Features
+        .checkboxes
+          = check_box_tag 'cms_config[features_testimonials]', @current_config['features']['testimonials'], @current_config['features']['testimonials']
+          = label_tag 'cms_config[features_testimonials]', "Testimonials"
+          %br
+          = check_box_tag 'cms_config[features_feature_box]', @current_config['features']['feature_box'], @current_config['features']['feature_box']
+          = label_tag 'cms_config[features_feature_box]', "Feature Box"
+    #main-form-options
+      %dl
+        %dt.form-label= f.label :title
+        %dd.form-option= f.text_field :title
+        %dt.form-label= f.label :domain, "Domains"
+        %dd.form-option
+          = f.text_field :domain, :size => "70"
+          .note 
+            All domains associated with the account, comma separated, without http://
+            %br
+            %strong Example: "subdomain.domain.com, domain.com, parkdomain.domain.com"
+      - if CMS_CONFIG['site_settings']['show_import_account_options']
+        %dl
+          %dt.form-label= label_tag 'oldaccount[name]', "Import Account Name"
+          %dd.form-option
+            = text_field_tag 'oldaccount[name]'
+            .note Fill in this field to import an existing account on the server running an independent app.
+          %dt.form-label= label_tag 'database[host]', "Host"
+          %dd.form-option= text_field_tag 'database[host]'
+          %dt.form-label= label_tag 'database[database]', "Database"
+          %dd.form-option= text_field_tag 'database[database]'
+          %dt.form-label= label_tag 'database[adapter]', "Adapter"
+          %dd.form-option= text_field_tag 'database[adapter]'
+          %dt.form-label= label_tag 'database[username]', "Username"
+          %dd.form-option= text_field_tag 'database[username]'
+          %dt.form-label= label_tag 'database[password]', "Password"
+          %dd.form-option= text_field_tag 'database[password]'
+    = clear
+    = f.submit
+  - content_for :head do
+    %style{:type => "text/css"}
+      div#main-form-options { width: 520px; float: left; }
