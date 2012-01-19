@@ -58,19 +58,19 @@ class Admin::AccountsController < AdminController
       system "mkdir #{path}/current/config/domains/#{@account.directory}"
       system "mv #{path}/current/config/domains/#{@account.directory} #{path}/shared/config/domains/"
       system "ln -s #{path}/shared/config/domains/#{@account.directory} #{path}/current/config/domains/#{@account.directory}"
-      if params[:oldaccount][:name].blank?
+      # if params[:oldaccount][:name].blank?
         system "cp #{path}/shared/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"
-      else
-        system "cp /data/#{params[:oldaccount][:name]}/shared/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"   
-        system "cp /data/#{params[:oldaccount][:name]}/shared/config/database.yml #{path}/shared/config/domains/#{@account.directory}/database.yml"   
-        @account.update_attributes(:separate_db => true)  
-      end
+      # else
+      #   system "cp /data/#{params[:oldaccount][:name]}/shared/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"   
+      #   system "cp /data/#{params[:oldaccount][:name]}/shared/config/database.yml #{path}/shared/config/domains/#{@account.directory}/database.yml"   
+      #   @account.update_attributes(:separate_db => true)  
+      # end
       cms_yml = YAML::load_file("#{path}/current/config/domains/#{@account.directory}/cms.yml")
       cms_yml['website']['name'] = "#{@account.title.strip}"
       # Import Data From Existing Database
-      if !params[:oldaccount][:name].blank? or !params[:database][:database].blank?
-        cms_yml['site_settings']['secondary_database'] = true
-      else
+      # if !params[:oldaccount][:name].blank? or !params[:database][:database].blank?
+      #   cms_yml['site_settings']['secondary_database'] = true
+      # else
         params[:cms_config][:modules_blog] ? cms_yml['modules']['blog'] = true : cms_yml['modules']['blog'] = false
         params[:cms_config][:modules_events] ? cms_yml['modules']['events'] = true : cms_yml['modules']['events'] = false
         params[:cms_config][:modules_newsletters] ? cms_yml['modules']['newsletters'] = true : cms_yml['modules']['newsletters'] = false
@@ -81,16 +81,16 @@ class Admin::AccountsController < AdminController
         params[:cms_config][:modules_members] ? cms_yml['modules']['members'] = true : cms_yml['modules']['members'] = false
         params[:cms_config][:features_feature_box] ? cms_yml['features']['feature_box'] = true : cms_yml['features']['feature_box'] = false
         params[:cms_config][:features_testimonials] ? cms_yml['features']['testimonials'] = true : cms_yml['features']['testimonials'] = false
-      end
+      # end
       File.open("#{path}/current/config/domains/#{@account.directory}/cms.yml", 'w') { |f| YAML.dump(cms_yml, f) }
-      @database_yml = YAML::load_file("#{path}/current/config/database.yml")
-      if !params[:oldaccount][:name].blank?
-        @old_database_yml = YAML::load_file("#{path}/shared/config/domains/#{@account.directory}/database.yml")
-        @database_yml[@account.directory] = {"adapter" => @old_database_yml['production']['adapter'], "database" => @old_database_yml['production']['database'], "host" => @old_database_yml['production']['host'], "username" => @old_database_yml['production']['username'], "password" => @old_database_yml['production']['password']}
-      elsif !params[:database][:database].blank?
-        @database_yml[@account.directory] = {"adapter" => params[:database][:adapter], "database" => params[:database][:database], "host" => params[:database][:host], "username" => params[:database][:username], "password" => params[:database][:password]}
-      end
-      File.open("#{path}/current/config/database.yml", 'w') { |f| YAML.dump(@database_yml, f) }
+      # @database_yml = YAML::load_file("#{path}/current/config/database.yml")
+      # if !params[:oldaccount][:name].blank?
+      #   @old_database_yml = YAML::load_file("#{path}/shared/config/domains/#{@account.directory}/database.yml")
+      #   @database_yml[@account.directory] = {"adapter" => @old_database_yml['production']['adapter'], "database" => @old_database_yml['production']['database'], "host" => @old_database_yml['production']['host'], "username" => @old_database_yml['production']['username'], "password" => @old_database_yml['production']['password']}
+      # elsif !params[:database][:database].blank?
+      #   @database_yml[@account.directory] = {"adapter" => params[:database][:adapter], "database" => params[:database][:database], "host" => params[:database][:host], "username" => params[:database][:username], "password" => params[:database][:password]}
+      # end
+      # File.open("#{path}/current/config/database.yml", 'w') { |f| YAML.dump(@database_yml, f) }
     else
       @account.update_attributes(:directory => path_safe(@account.title))
       path = RAILS_ROOT
