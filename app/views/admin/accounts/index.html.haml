@@ -5,7 +5,7 @@
     = link_to "Make a new account", new_admin_account_path
 %div
   %strong= pluralize(@accounts.size, "Account")
-%table#accounts-table.full-width{:cellspacing => "0"}
+%table#accounts-table.full_width{:cellspacing => "0"}
   %thead
     %tr
       %th{:style => "width: 10px; "}
@@ -50,7 +50,6 @@
 
 - content_for :head do
   %style{:type => "text/css"}
-    ==#accounts-table td { vertical-align: top; }
     ==.account-details-link { margin: 4px 0 0 5px; }
     ==.account-details-link a { text-decoration: none; }
     ==.account-details { display: none; }
