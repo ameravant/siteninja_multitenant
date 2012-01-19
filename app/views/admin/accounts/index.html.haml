@@ -22,8 +22,8 @@
           = link_to(account.title, edit_admin_account_path(account.id))
         - else
           = account.title
-        .account-details-link.note= link_to("Details", "javascript:void(0)", :onclick => "jQuery('#account-details-#{account.id}').toggle()")
-        %ul.account-details.note{:id => "account-details-#{account.id}"}
+        .account-details-link.detail= link_to("Details", "javascript:void(0)", :onclick => "jQuery('#account-details-#{account.id}').toggle()")
+        %ul.account-details.detail{:id => "account-details-#{account.id}"}
           %li= pluralize(account.pages.size, "Page") if account.pages.size > 0
           %li= pluralize(account.articles.size, "Article") if account.articles.size > 0
           %li= pluralize(account.testimonials.size, "Testimonial") if account.testimonials.size > 0
@@ -53,6 +53,6 @@
     ==.account-details-link { margin: 4px 0 0 5px; }
     ==.account-details-link a { text-decoration: none; }
     ==.account-details { display: none; }
-    ==ul.note { list-style: none; margin: 5px 0 0 10px; padding: 0; }
-    ==ul.note li { margin-bottom: 4px; }
+    ==ul.detail { list-style: none; margin: 5px 0 0 10px; padding: 0; }
+    ==ul.detail li { margin-bottom: 4px; }
       
