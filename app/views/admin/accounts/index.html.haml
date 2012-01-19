@@ -11,7 +11,7 @@
       %th{:style => "width: 10px; "}
       %th{:style => "width: 300px;"} Name
       %th Domains
-      %th{:style => "width: 130px;"} Created On
+      %th{:style => "width: 130px;"} Launched On
       %th{:style => "width: 50px"} Options
   - @accounts.each_with_index do |account, i|
     %tr{:class => cycle('odd','even'), :id => "#{dom_id(account)}"}
@@ -34,7 +34,7 @@
           %li= pluralize(account.assets.size, "Asset") if account.assets.size > 0 
           %li= pluralize(account.inquiries.size, "Inquiry") if account.inquiries.size > 0 
       %td
-        .note
+        .detail
           - if account.domain
             - linked_domains = []
             - domains = account.domain.gsub(" ", "").split(",")
@@ -42,7 +42,7 @@
               - linked_domains << link_to(domain, "http://#{domain}", :target => "_blank")
             = linked_domains.join(", ")
       %td
-        .note= account.created_at.strftime("%b %d, %Y &mdash; %I:%M %p")
+        .detail= account.created_at.strftime("%b %d, %Y at %I:%M %p")
       %td
         - if !account.is_master?
           = icon "Write", edit_admin_account_path(account.id)
