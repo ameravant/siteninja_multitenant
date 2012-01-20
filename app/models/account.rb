@@ -1,5 +1,7 @@
 class Account < ActiveRecord::Base
   cattr_accessor :current
+  validates_uniqueness_of :title
+  validates_uniqueness_of :domain
   for klass in Klasses
     has_many klass.table_name.to_sym
   end
