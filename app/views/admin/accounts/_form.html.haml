@@ -39,11 +39,11 @@
           = label_tag 'cms_config[features_feature_box]', "Feature Box"
     #main-form-options
       %dl
-        %dt.form-label= f.label :title
-        %dd.form-option= f.text_field :title
+        %dt.title.form-label= f.label :title
+        %dd.form-option= f.text_field :title, :class => "big"
         %dt.form-label= f.label :domain, "Domains"
         %dd.form-option
-          = f.text_field :domain, :size => "70"
+          = f.text_field :domain, :class => "big"
           .note 
             All domains associated with the account, comma separated, without http://
             %br

@@ -63,6 +63,8 @@ namespace :db do
           menu.show_in_footer = page.show_in_footer
           menu.can_delete = page.can_delete
           menu.status = page.status
+          menu.show_in_main_menu = false if page.status == "hidden"
+          menu.show_in_side_column = false if page.status == "hidden"
           menu.account_id = page.account_id
           menu.save
         end
@@ -90,12 +92,14 @@ namespace :db do
     # Create the Ameravant logins
     michael = Person.create(:first_name => "Michael", :last_name => "Kramer", :email => "michael@ameravant.com", :account_id => $CURRENT_ACCOUNT.id)
     michael.person_groups << admin
-    user = User.create(:login => "michael", :password => "123Mail", :password_confirmation => "123Mail", :active => true, :account_id => $CURRENT_ACCOUNT.id)
+    user = User.create(:login => "michael", :password => "123Mail", :password_confirmation => "123Mail", :active => true, :account_id => $CURRENT_ACCOUNT.id, :is_super_user => true)
+    user.is_super_user = true
     user.person_id = michael.id
     user.save
     dave = Person.create(:first_name => "Dave", :last_name => "Myers", :email => "dave@ameravant.com", :account_id => $CURRENT_ACCOUNT.id)
     dave.person_groups << admin
     user = User.create(:login => "dave", :password => "123Mail", :password_confirmation => "123Mail", :active => true, :account_id => $CURRENT_ACCOUNT.id)
+    user.is_super_user = true
     user.person_id = dave.id
     user.save
     
