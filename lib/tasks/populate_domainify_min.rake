@@ -45,6 +45,10 @@ namespace :db do
         Page.create(:parent_id => contact.id, :title => 'Contact Us - Thank You', :body => 'Thank you for your inquiry. We usually respond within 24 hours.', :meta_title => "Message sent", :permalink => "inquiry_received", :status => 'hidden', :show_in_footer => false, :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_side.id, :main_column_id => @default_column.id)
         Page.create(:parent_id => contact.id, :title => 'Privacy Policy',:show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => 'This page can be helpful when creating a privacy policy <a href="http://www.freeprivacypolicy.com/privacy.php">http://www.freeprivacypolicy.com/privacy.php</a>', :meta_title => "Privacy Policy", :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_side.id, :main_column_id => @default_column.id)
         Page.create(:parent_id => contact.id, :title => 'Terms of Use', :show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => 'Terms of Use', :status => 'hidden', :meta_title => "Terms of Use", :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_side.id, :main_column_id => @default_column.id)
+        Page.create(:title => 'Documents', :meta_title => 'Documents', :body => "documents", :permalink => "documents", :can_delete => false, :account_id => $CURRENT_ACCOUNT.id, :column_id => @default_side.id, :main_column_id => @default_column.id) if @cms_config['modules']['documents']
+        if @cms_config['modules']['documents']
+          Folder.create(:title => "Top Folder", :permalink => "top-folder", :can_delete => false)
+        end
         for page in Page.all
           if page.menus.empty?
             menu = page.menus.new
