@@ -113,6 +113,7 @@ namespace :db do
     @default_side = Column.create(:title => "Default Side Column", :account_id => $CURRENT_ACCOUNT.id, :column_location => "side_column", :can_delete => false)
     @default_article_side = Column.create(:title => "Default Article Side Column", :column_location => "side_column", :can_delete => false)
     @homepage_column = Column.create(:title => "Homepage", :column_location => "main_column", :can_delete => false)
+    Column.create(:title => "No Side Column", :column_location => "side_column", :can_delete => false)
     ColumnSection.create(:title => "Feature Box", :column_section_type_id => feature.id, :column_id => @homepage_column.id, :position => 1)
     ColumnSection.create(:title => "Body Content", :column_section_type_id => body_column.id, :column_id => @homepage_column.id, :position => 2)
     @default_column = Column.create(:title => "Default", :column_location => "main_column", :can_delete => false)
