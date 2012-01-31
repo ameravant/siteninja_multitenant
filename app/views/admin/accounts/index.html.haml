@@ -12,7 +12,9 @@
       %th{:style => "width: 300px;"} Name
       %th Domains
       %th{:style => "width: 130px;"} Launched On
-      %th{:style => "width: 50px"} Options
+      %th{:style => "width: 50px"} Today
+      %th{:style => "width: 50px"} Month
+      %th{:style => "width: 20px"}
   - @accounts.each_with_index do |account, i|
     %tr{:class => cycle('odd','even'), :id => "#{dom_id(account)}"}
       %td
@@ -22,7 +24,9 @@
           = link_to(account.title, edit_admin_account_path(account.id))
         - else
           = account.title
-        .account-details-link.detail= link_to("Details", "javascript:void(0)", :onclick => "jQuery('#account-details-#{account.id}').toggle()")
+        .account-details-link.detail
+          = link_to("Details", "javascript:void(0)", :onclick => "jQuery('#account-details-#{account.id}').toggle()")
+          = link_to("Stats", admin_account_stats_path(account.id))
         %ul.account-details.detail{:id => "account-details-#{account.id}"}
           %li= pluralize(account.pages.size, "Page") if account.pages.size > 0
           %li= pluralize(account.articles.size, "Article") if account.articles.size > 0
@@ -44,15 +48,24 @@
       %td
         .detail= account.created_at.strftime("%b %d, %Y at %I:%M %p")
       %td
+        .detail
+          == #{Stat.all(:conditions => ['account_id = ? and created_at > ?', account.id, Time.now.beginning_of_day]).size} Views
+          %br
+          == #{Stat.all(:conditions => ['account_id = ? and created_at > ?', account.id, Time.now.beginning_of_day]).map(&:remote_ip).uniq.size} Unique
+      %td
+        .detail
+          == #{Stat.all(:conditions => ['account_id = ? and created_at > ?', account.id, Time.now.beginning_of_month]).size} Views
+          %br
+          == #{Stat.all(:conditions => ['account_id = ? and created_at > ?', account.id, Time.now.beginning_of_month]).map(&:remote_ip).uniq.size} Unique
+      %td
         - if !account.is_master?
           = icon "Write", edit_admin_account_path(account.id)
-          = trash_icon(account, admin_account_path(account), "#{account.title}")
 
 - content_for :head do
   %style{:type => "text/css"}
     ==.account-details-link { margin: 4px 0 0 5px; }
     ==.account-details-link a { text-decoration: none; }
     ==.account-details { display: none; }
-    ==ul.detail { list-style: none; margin: 5px 0 0 10px; padding: 0; }
+    ==ul.detail { list-style: none; margin: 5px 0 0 10px; padding: 0; width: 100px; }
     ==ul.detail li { margin-bottom: 4px; }
       

@@ -5,10 +5,11 @@ TableNames.each do |table_name|
   end
 end
 namespace :admin do |admin|
-  admin.resources :accounts do |account|
+  admin.resources :accounts, :member => { :destroy => :get } do |account|
     for klass in klasses
       account.resources klass
     end
+    account.resources :stats
   end
 end
 # for klass in klasses

@@ -1,5 +1,6 @@
 class Account < ActiveRecord::Base
   cattr_accessor :current
+  has_many :stats
   validates_uniqueness_of :title
   validates_uniqueness_of :domain
   for klass in Klasses

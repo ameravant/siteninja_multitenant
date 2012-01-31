@@ -1,0 +1,37 @@
+%h1== #{@account.title} Statistics
+
+- today = Stat.all(:conditions => ['account_id = ? and created_at > ?', @account.id, Time.now.beginning_of_day])
+- today_unique = Stat.all(:conditions => ['account_id = ? and created_at > ?', @account.id, Time.now.beginning_of_day]).map(&:remote_ip).uniq.size
+- yesterday = Stat.all(:conditions => ['account_id = ? and created_at < ? and created_at > ?', @account.id, Time.now.beginning_of_day, Time.now.beginning_of_day - Time.now.beginning_of_day - 1.days ]).size
+- yesterday_unique = Stat.all(:conditions => ['account_id = ? and created_at < ? and created_at > ?', @account.id, Time.now.beginning_of_day, Time.now.beginning_of_day - Time.now.beginning_of_day - 1.days ]).map(&:remote_ip).uniq.size
+- month = Stat.all(:conditions => ['account_id = ? and created_at > ?', @account.id, Time.now.beginning_of_month]).size
+- month_unique = Stat.all(:conditions => ['account_id = ? and created_at > ?', @account.id, Time.now.beginning_of_month]).map(&:remote_ip).uniq.size
+- total = Stat.all(:conditions => {:account_id => @account.id}).size
+- total_unique = Stat.all(:conditions => {:account_id => @account.id}).map(&:remote_ip).uniq.size
+
+%table.full_width
+  %tr
+    %th Today
+    %th Yesterday
+    %th Month
+    %th All Time
+  %tr
+    %td== #{today.size} views, #{today_unique} unique
+    %td== #{yesterday} views, #{yesterday_unique} unique
+    %td== #{month} views, #{month_unique} unique
+    %td== #{total} views, #{total_unique} unique
+
+%br
+%table.full_width
+  %tr
+    %th Remote IP
+    %th URL
+    %th Referer
+    %th Timestamp
+  - for stat in today
+    %tr.detail{:class => cycle("odd", "even")}
+      %td= stat.remote_ip
+      %td= stat.url
+      %td= stat.referer
+      %td= stat.created_at
+  

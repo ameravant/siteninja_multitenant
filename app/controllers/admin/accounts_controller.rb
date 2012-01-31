@@ -27,6 +27,22 @@ class Admin::AccountsController < AdminController
     end
   end
   
+  def destroy
+    @account = Account.find(params[:id])
+    for table_name in TableNames
+      if ActiveRecord::Base.connection.tables.include?(table_name)
+        records = eval("@account.#{table_name}")
+        for record in records
+          record.destroy
+        end
+      end
+    end
+    system "rm -rf #{RAILS_ROOT}/config/domains/#{@account.directory}"
+    @account.destroy
+    flash[:notice] = "Account has been deleted."
+    redirect_to admin_accounts_path
+  end
+  
   def update
     if @account.update_attributes(params[:account])
       path = RAILS_ROOT.gsub(/(\/data\/)(\S*)\/releases\S*/, '\1\2')

@@ -1,2 +1,11 @@
 %h1= large_icon('Picture') + ' ' + "Update Account"
 = render :partial => 'form'
+
+
+.delete-account
+  = link_to("#{image_tag("#{icons_loc}/red/16x16/Trash.png", :class => "icon destroy", :alt => "Delete #{@account.title}")} Delete this Account", destroy_admin_account_path(@account), :confirm => "Do you really want to delete #{@account.title} and all of its records? There is no undo!")
+
+- content_for :head do
+  %style{:type => "text/css"}
+    == .delete-account { font-weight: bold; margin: 100px 0 0; text-align: center; }
+    == .delete-account a { text-decoration: none; color: #900 !important;}
