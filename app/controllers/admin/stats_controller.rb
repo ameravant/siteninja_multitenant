@@ -1,8 +1,10 @@
 class Admin::StatsController < AdminController
   unloadable
+  before_filter :super_admin_check
   add_breadcrumb "Accounts", "/admin/accounts"
 
   def index
+    @tmplate.doctype == "5"
     if params[:account_id]
       @account = Account.find(params[:account_id])
       add_breadcrumb @account.title, admin_account_path(@account.id)
@@ -20,6 +22,26 @@ class Admin::StatsController < AdminController
       @today_unique = Stat.all(:conditions => ['account_id = ? and created_at > ?', @account.id, Time.now.beginning_of_day]).map(&:remote_ip).uniq.size
       @yesterday = Stat.all(:conditions => ['account_id = ? and created_at < ? and created_at > ?', @account.id, Time.now.beginning_of_day, Time.now.beginning_of_day - Time.now.beginning_of_day - 1.days ]).size
       @yesterday_unique = Stat.all(:conditions => ['account_id = ? and created_at < ? and created_at > ?', @account.id, Time.now.beginning_of_day, Time.now.beginning_of_day - Time.now.beginning_of_day - 1.days ]).map(&:remote_ip).uniq.size
+      
+      @day_3 = Stat.all(:conditions => ['account_id = ? and created_at < ? and created_at > ?', @account.id, Time.now.beginning_of_day - 1.days, Time.now.beginning_of_day - Time.now.beginning_of_day - 2.days ]).size
+      @day_3_unique = Stat.all(:conditions => ['account_id = ? and created_at < ? and created_at > ?', @account.id, Time.now.beginning_of_day - 1.days, Time.now.beginning_of_day - Time.now.beginning_of_day - 2.days ]).map(&:remote_ip).uniq.size
+      
+      
+      @day_4 = Stat.all(:conditions => ['account_id = ? and created_at < ? and created_at > ?', @account.id, Time.now.beginning_of_day - 2.days, Time.now.beginning_of_day - Time.now.beginning_of_day - 3.days ]).size
+      @day_4_unique = Stat.all(:conditions => ['account_id = ? and created_at < ? and created_at > ?', @account.id, Time.now.beginning_of_day - 2.days, Time.now.beginning_of_day - Time.now.beginning_of_day - 3.days ]).map(&:remote_ip).uniq.size
+      
+      
+      @day_5 = Stat.all(:conditions => ['account_id = ? and created_at < ? and created_at > ?', @account.id, Time.now.beginning_of_day - 3.days, Time.now.beginning_of_day - Time.now.beginning_of_day - 4.days ]).size
+      @day_5_unique = Stat.all(:conditions => ['account_id = ? and created_at < ? and created_at > ?', @account.id, Time.now.beginning_of_day - 3.days, Time.now.beginning_of_day - Time.now.beginning_of_day - 4.days ]).map(&:remote_ip).uniq.size
+      
+      
+      @day_6 = Stat.all(:conditions => ['account_id = ? and created_at < ? and created_at > ?', @account.id, Time.now.beginning_of_day - 4.days, Time.now.beginning_of_day - Time.now.beginning_of_day - 5.days ]).size
+      @day_6_unique = Stat.all(:conditions => ['account_id = ? and created_at < ? and created_at > ?', @account.id, Time.now.beginning_of_day - 4.days, Time.now.beginning_of_day - Time.now.beginning_of_day - 5.days ]).map(&:remote_ip).uniq.size
+      
+      
+      @day_7 = Stat.all(:conditions => ['account_id = ? and created_at < ? and created_at > ?', @account.id, Time.now.beginning_of_day - 5.days, Time.now.beginning_of_day - Time.now.beginning_of_day - 6.days ]).size
+      @day_7_unique = Stat.all(:conditions => ['account_id = ? and created_at < ? and created_at > ?', @account.id, Time.now.beginning_of_day - 5.days, Time.now.beginning_of_day - Time.now.beginning_of_day - 6.days ]).map(&:remote_ip).uniq.size
+      
       @month = Stat.all(:conditions => ['account_id = ? and created_at > ?', @account.id, Time.now.beginning_of_month]).size
       @month_unique = Stat.all(:conditions => ['account_id = ? and created_at > ?', @account.id, Time.now.beginning_of_month]).map(&:remote_ip).uniq.size
       @total = Stat.all(:conditions => {:account_id => @account.id}).size
@@ -39,12 +61,36 @@ class Admin::StatsController < AdminController
       @today_unique = Stat.all(:conditions => ['created_at > ?', Time.now.beginning_of_day]).map(&:remote_ip).uniq.size
       @yesterday = Stat.all(:conditions => ['created_at < ? and created_at > ?', Time.now.beginning_of_day, Time.now.beginning_of_day - Time.now.beginning_of_day - 1.days ]).size
       @yesterday_unique = Stat.all(:conditions => ['created_at < ? and created_at > ?', Time.now.beginning_of_day, Time.now.beginning_of_day - Time.now.beginning_of_day - 1.days ]).map(&:remote_ip).uniq.size
+      
+      @day_3 = Stat.all(:conditions => ['created_at < ? and created_at > ?', Time.now.beginning_of_day - 1.days, Time.now.beginning_of_day - Time.now.beginning_of_day - 2.days ]).size
+      @day_3_unique = Stat.all(:conditions => ['created_at < ? and created_at > ?', Time.now.beginning_of_day - 1.days, Time.now.beginning_of_day - Time.now.beginning_of_day - 2.days ]).map(&:remote_ip).uniq.size
+      
+      
+      @day_4 = Stat.all(:conditions => ['created_at < ? and created_at > ?', Time.now.beginning_of_day - 2.days, Time.now.beginning_of_day - Time.now.beginning_of_day - 3.days ]).size
+      @day_4_unique = Stat.all(:conditions => ['created_at < ? and created_at > ?', Time.now.beginning_of_day - 2.days, Time.now.beginning_of_day - Time.now.beginning_of_day - 3.days ]).map(&:remote_ip).uniq.size
+      
+      
+      @day_5 = Stat.all(:conditions => ['created_at < ? and created_at > ?', Time.now.beginning_of_day - 3.days, Time.now.beginning_of_day - Time.now.beginning_of_day - 4.days ]).size
+      @day_5_unique = Stat.all(:conditions => ['created_at < ? and created_at > ?', Time.now.beginning_of_day - 3.days, Time.now.beginning_of_day - Time.now.beginning_of_day - 4.days ]).map(&:remote_ip).uniq.size
+      
+      
+      @day_6 = Stat.all(:conditions => ['created_at < ? and created_at > ?', Time.now.beginning_of_day - 4.days, Time.now.beginning_of_day - Time.now.beginning_of_day - 5.days ]).size
+      @day_6_unique = Stat.all(:conditions => ['created_at < ? and created_at > ?', Time.now.beginning_of_day - 4.days, Time.now.beginning_of_day - Time.now.beginning_of_day - 5.days ]).map(&:remote_ip).uniq.size
+      
+      
+      @day_7 = Stat.all(:conditions => ['created_at < ? and created_at > ?', Time.now.beginning_of_day - 5.days, Time.now.beginning_of_day - Time.now.beginning_of_day - 6.days ]).size
+      @day_7_unique = Stat.all(:conditions => ['created_at < ? and created_at > ?', Time.now.beginning_of_day - 5.days, Time.now.beginning_of_day - Time.now.beginning_of_day - 6.days ]).map(&:remote_ip).uniq.size
+      
       @month = Stat.all(:conditions => ['created_at > ?', Time.now.beginning_of_month]).size
       @month_unique = Stat.all(:conditions => ['created_at > ?', Time.now.beginning_of_month]).map(&:remote_ip).uniq.size
       @total = Stat.all.size
       @total_unique = Stat.all.map(&:remote_ip).uniq.size
       
     end
+  end
+  
+  def super_admin_check
+    redirect_to '/' unless current_user && current_user.is_super_user
   end
   
 end
