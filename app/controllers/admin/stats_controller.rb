@@ -3,9 +3,17 @@ class Admin::StatsController < AdminController
   add_breadcrumb "Accounts", "/admin/accounts"
 
   def index
-    add_breadcrumb "Stats"
     @account = Account.find(params[:account_id])
-    @stats = @account.stats
+    add_breadcrumb @account.title, admin_account_path(@account.id)
+    if params[:remote_ip]
+      add_breadcrumb "Stats", admin_account_stats_path(@account.id)
+      add_breadcrumb params[:remote_ip]
+      stats = Stat.all(:conditions => ['account_id = ? and created_at > ? and remote_ip = ?', @account.id, Time.now.beginning_of_day, params[:remote_ip]])
+    else
+      add_breadcrumb "Stats"
+      stats = Stat.all(:conditions => ['account_id = ? and created_at > ?', @account.id, Time.now.beginning_of_day])
+    end
+    @stats = stats.paginate(:page => params[:page], :per_page => 20)
   end
   
 end
