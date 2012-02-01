@@ -5,6 +5,7 @@ class Admin::AccountsController < AdminController
   before_filter :find_account, :only => [:edit, :update, :delete]
   def index
     @accounts = Account.all
+    @blocked_ips = @cms_config['site_settings']['blocked_ips'].blank? ? "" : @cms_config['site_settings']['blocked_ips'].gsub(" ", "").split(",").collect {|i| '"' + i + '"'}.join(",")
   end
   def new
     @account = Account.new

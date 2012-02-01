@@ -1,3 +1,7 @@
+%form{:action => "/admin/stats", :method => "get", :style => "width: 250px; float: right; text-align: right;", :id => "account_form"}
+  = select_tag 'account_id', options_from_collection_for_select(Account.all, "id", "title", params[:account_id]), :style => "width: 200px;", :onchange => "document.getElementById('account_form').submit()"
+  - if params[:account_id]
+    = link_to("Clear", admin_stats_path, :style => "font-size: 12px; text-decoration: none;")
 
 - if params[:account_id]
   %h1=large_icon('Stats 3') + " #{@account.title} Statistics"

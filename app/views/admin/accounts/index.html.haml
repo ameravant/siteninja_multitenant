@@ -52,14 +52,14 @@
           = account.created_at.strftime("%I:%M %p")
       %td
         .detail
-          == #{Stat.all(:conditions => ['account_id = ? and created_at > ?', account.id, Time.now.beginning_of_day]).size} Views
+          == #{Stat.all(:conditions => ["account_id = ? and created_at > ? and remote_ip not in (#{@blocked_ips})", account.id, Time.now.beginning_of_day]).size} Views
           %br
-          == #{Stat.all(:conditions => ['account_id = ? and created_at > ?', account.id, Time.now.beginning_of_day]).map(&:remote_ip).uniq.size} Unique
+          == #{Stat.all(:conditions => ["account_id = ? and created_at > ? and remote_ip not in (#{@blocked_ips})", account.id, Time.now.beginning_of_day]).map(&:remote_ip).uniq.size} Unique
       %td
         .detail
-          == #{Stat.all(:conditions => ['account_id = ? and created_at > ?', account.id, Time.now.beginning_of_month]).size} Views
+          == #{Stat.all(:conditions => ["account_id = ? and created_at > ? and remote_ip not in (#{@blocked_ips})", account.id, Time.now.beginning_of_month]).size} Views
           %br
-          == #{Stat.all(:conditions => ['account_id = ? and created_at > ?', account.id, Time.now.beginning_of_month]).map(&:remote_ip).uniq.size} Unique
+          == #{Stat.all(:conditions => ["account_id = ? and created_at > ? and remote_ip not in (#{@blocked_ips})", account.id, Time.now.beginning_of_month]).map(&:remote_ip).uniq.size} Unique
       %td
         - if !account.is_master?
           = icon "Write", edit_admin_account_path(account.id)

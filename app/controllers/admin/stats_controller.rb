@@ -45,8 +45,8 @@ class Admin::StatsController < AdminController
       
       @month = Stat.all(:conditions => ["account_id = ? and created_at > ? and remote_ip not in (#{@blocked_ips})", @account.id, Time.now.beginning_of_month]).size
       @month_unique = Stat.all(:conditions => ["account_id = ? and created_at > ? and remote_ip not in (#{@blocked_ips})", @account.id, Time.now.beginning_of_month]).map(&:remote_ip).uniq.size
-      @total = Stat.all(:conditions => {:account_id => @account.id}).size
-      @total_unique = Stat.all(:conditions => {:account_id => @account.id}).map(&:remote_ip).uniq.size
+      @total = Stat.all(:conditions => ["account_id = ? and remote_ip not in (#{@blocked_ips})", @account.id]).size
+      @total_unique = Stat.all(:conditions => ["account_id = ? and remote_ip not in (#{@blocked_ips})", @account.id]).map(&:remote_ip).uniq.size
 
     else
       if params[:remote_ip]
@@ -84,8 +84,8 @@ class Admin::StatsController < AdminController
       
       @month = Stat.all(:conditions => ["created_at > ? and remote_ip not in (#{@blocked_ips})", Time.now.beginning_of_month]).size
       @month_unique = Stat.all(:conditions => ["created_at > ? and remote_ip not in (#{@blocked_ips})", Time.now.beginning_of_month]).map(&:remote_ip).uniq.size
-      @total = Stat.all.size
-      @total_unique = Stat.all.map(&:remote_ip).uniq.size
+      @total = Stat.all(:conditions => ["remote_ip not in (#{@blocked_ips})"]).size
+      @total_unique = Stat.all(:conditions => ["remote_ip not in (#{@blocked_ips})"]).map(&:remote_ip).uniq.size
       
     end
   end
