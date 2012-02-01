@@ -28,14 +28,16 @@
 
 %table.full_width
   %tr
-    %th Remote IP
+    - unless params[:remote_ip]
+      %th Remote IP
     %th URL
     %th Referer
     %th Timestamp
   - for stat in @stats
     %tr.detail{:class => cycle("odd", "even")}
-      %td= link_to(stat.remote_ip, admin_account_stats_path(@account.id, :remote_ip => stat.remote_ip))
+      - unless params[:remote_ip]
+        %td= link_to(stat.remote_ip, admin_account_stats_path(@account.id, :remote_ip => stat.remote_ip))
       %td= link_to(stat.url, stat.url, :target => "_blank")
       %td= link_to(stat.referer, stat.referer, :target => "_blank")
-      %td= stat.created_at
+      %td= stat.created_at.strftime("%b %d, %Y <br /> %I:%M %p")
 = will_paginate @stats
