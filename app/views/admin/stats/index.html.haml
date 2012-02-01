@@ -29,10 +29,10 @@
 %table.full_width
   %tr
     - unless params[:remote_ip]
-      %th Remote IP
-    %th URL
+      %th{:style => "width: 70px"} Remote IP
+    %th{:style => "width: 350px;"} URL
     %th Referer
-    %th Timestamp
+    %th{:style => "width: 50px;"} Timestamp
   - for stat in @stats
     %tr.detail{:class => cycle("odd", "even")}
       - unless params[:remote_ip]
