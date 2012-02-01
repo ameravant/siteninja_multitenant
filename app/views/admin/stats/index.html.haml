@@ -31,13 +31,13 @@
     - unless params[:remote_ip]
       %th{:style => "width: 70px"} Remote IP
     %th{:style => "width: 350px;"} URL
-    %th Referer
+    %th{:style => "width: 250px; overflow: hidden;"} Referer
     %th{:style => "width: 50px;"} Timestamp
   - for stat in @stats
     %tr.detail{:class => cycle("odd", "even")}
       - unless params[:remote_ip]
         %td= link_to(stat.remote_ip, admin_account_stats_path(@account.id, :remote_ip => stat.remote_ip))
-      %td= link_to(stat.url, stat.url, :target => "_blank")
-      %td= stat.referer.blank? ? "" : link_to(stat.referer, stat.referer, :target => "_blank")
+      %td{:style => "width: 350px;"}= link_to(stat.url, stat.url, :target => "_blank")
+      %td{:style => "width: 250px; overflow: hidden;"}= stat.referer.blank? ? "" : link_to(stat.referer, stat.referer, :target => "_blank")
       %td= stat.created_at.strftime("%b %d, %Y <br /> %I:%M %p")
 = will_paginate @stats
