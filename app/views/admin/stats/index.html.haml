@@ -38,6 +38,6 @@
       - unless params[:remote_ip]
         %td= link_to(stat.remote_ip, admin_account_stats_path(@account.id, :remote_ip => stat.remote_ip))
       %td= link_to(stat.url, stat.url, :target => "_blank")
-      %td= link_to(stat.referer, stat.referer, :target => "_blank")
+      %td= stat.referer.blank? ? "" : link_to(stat.referer, stat.referer, :target => "_blank")
       %td= stat.created_at.strftime("%b %d, %Y <br /> %I:%M %p")
 = will_paginate @stats
