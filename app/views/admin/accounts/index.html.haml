@@ -46,7 +46,10 @@
               - linked_domains << link_to(domain, "http://#{domain}", :target => "_blank")
             = linked_domains.join(", ")
       %td
-        .detail= account.created_at.strftime("%b %d, %Y at %I:%M %p")
+        .detail
+          = account.created_at.strftime("%b %d, %Y")
+          %br
+          = account.created_at.strftime("%I:%M %p")
       %td
         .detail
           == #{Stat.all(:conditions => ['account_id = ? and created_at > ?', account.id, Time.now.beginning_of_day]).size} Views
