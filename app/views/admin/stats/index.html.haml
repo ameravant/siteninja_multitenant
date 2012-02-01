@@ -1,16 +1,10 @@
-%h1== #{@account.title} Statistics
+- if params[:account_id]
+  %h1== #{@account.title} Statistics
+- else
+  %h1 Statistics
 - if params[:remote_ip]
   %h2== #{params[:remote_ip]} History
 - else
-  - today = Stat.all(:conditions => ['account_id = ? and created_at > ?', @account.id, Time.now.beginning_of_day])
-  - today_unique = Stat.all(:conditions => ['account_id = ? and created_at > ?', @account.id, Time.now.beginning_of_day]).map(&:remote_ip).uniq.size
-  - yesterday = Stat.all(:conditions => ['account_id = ? and created_at < ? and created_at > ?', @account.id, Time.now.beginning_of_day, Time.now.beginning_of_day - Time.now.beginning_of_day - 1.days ]).size
-  - yesterday_unique = Stat.all(:conditions => ['account_id = ? and created_at < ? and created_at > ?', @account.id, Time.now.beginning_of_day, Time.now.beginning_of_day - Time.now.beginning_of_day - 1.days ]).map(&:remote_ip).uniq.size
-  - month = Stat.all(:conditions => ['account_id = ? and created_at > ?', @account.id, Time.now.beginning_of_month]).size
-  - month_unique = Stat.all(:conditions => ['account_id = ? and created_at > ?', @account.id, Time.now.beginning_of_month]).map(&:remote_ip).uniq.size
-  - total = Stat.all(:conditions => {:account_id => @account.id}).size
-  - total_unique = Stat.all(:conditions => {:account_id => @account.id}).map(&:remote_ip).uniq.size
-
   %table.full_width
     %tr
       %th Today
@@ -18,10 +12,10 @@
       %th Month
       %th All Time
     %tr
-      %td== #{today.size} views, #{today_unique} unique
-      %td== #{yesterday} views, #{yesterday_unique} unique
-      %td== #{month} views, #{month_unique} unique
-      %td== #{total} views, #{total_unique} unique
+      %td== #{@today.size} views, #{@today_unique} unique
+      %td== #{@yesterday} views, #{@yesterday_unique} unique
+      %td== #{@month} views, #{@month_unique} unique
+      %td== #{@total} views, #{@total_unique} unique
 
 %br
 = will_paginate @stats
@@ -36,7 +30,11 @@
   - for stat in @stats
     %tr.detail{:class => cycle("odd", "even")}
       - unless params[:remote_ip]
-        %td= link_to(stat.remote_ip, admin_account_stats_path(@account.id, :remote_ip => stat.remote_ip))
+        %td
+          - if @account
+            = link_to(stat.remote_ip, admin_account_stats_path(@account.id, :remote_ip => stat.remote_ip))
+          - else
+            = link_to(stat.remote_ip, admin_stats_path(:remote_ip => stat.remote_ip))
       %td{:style => "width: 350px;"}= link_to(stat.url, stat.url, :target => "_blank")
       %td
         %div{:style => "width: 250px; overflow: hidden; display: block;"}= stat.referer.blank? ? "" : link_to(stat.referer, stat.referer, :target => "_blank")

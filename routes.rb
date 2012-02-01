@@ -1,3 +1,4 @@
+
 klasses = []
 TableNames.each do |table_name|
   if ActiveRecord::Base.connection.tables.include?(table_name)
@@ -11,6 +12,7 @@ namespace :admin do |admin|
     end
     account.resources :stats
   end
+  admin.resources :stats
 end
 # for klass in klasses
 #   resources klass, :belongs_to => :account
