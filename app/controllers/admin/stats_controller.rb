@@ -19,6 +19,18 @@ class Admin::StatsController < AdminController
       end
       @stats = stats.paginate(:page => params[:page], :per_page => 100)
       
+      @hours = []
+      @hours_unique = []
+      day = Time.now
+      @hours << Stat.all(:conditions => ["account_id = ? and created_at > ? and created_at <= ? and remote_ip not in (#{@blocked_ips})", @account.id, 1.hour.ago, Time.now]).size
+      @hours_unique << Stat.all(:conditions => ["account_id = ? and created_at > ? and created_at <= ? and remote_ip not in (#{@blocked_ips})", @account.id, 1.hour.ago, Time.now]).map(&:remote_ip).uniq.size
+      23.times do |n|
+        @hours << Stat.all(:conditions => ["account_id = ? and created_at > ? and created_at <= ? and remote_ip not in (#{@blocked_ips})", @account.id, (n.to_i+2).hours.ago, (n.to_i+1).hours.ago]).size
+        @hours_unique << Stat.all(:conditions => ["account_id = ? and created_at > ? and created_at <= ? and remote_ip not in (#{@blocked_ips})", @account.id, (n.to_i+2).hours.ago, (n.to_i+1).hours.ago]).map(&:remote_ip).uniq.size
+      end
+      
+      
+      
       @today = Stat.all(:conditions => ["account_id = ? and created_at > ? and remote_ip not in (#{@blocked_ips})", @account.id, Time.now.beginning_of_day])
       @today_unique = Stat.all(:conditions => ["account_id = ? and created_at > ? and remote_ip not in (#{@blocked_ips})", @account.id, Time.now.beginning_of_day]).map(&:remote_ip).uniq.size
       @yesterday = Stat.all(:conditions => ["account_id = ? and created_at < ? and created_at > ? and remote_ip not in (#{@blocked_ips})", @account.id, Time.now.beginning_of_day, Time.now.beginning_of_day - Time.now.beginning_of_day - 1.days ]).size
@@ -57,7 +69,15 @@ class Admin::StatsController < AdminController
         stats = Stat.all(:order => "created_at DESC", :conditions => ["created_at > ? and remote_ip not in (#{@blocked_ips})", 30.days.ago])
       end
       @stats = stats.paginate(:page => params[:page], :per_page => 100)
-      
+      @hours = []
+      @hours_unique = []
+      day = Time.now
+      @hours << Stat.all(:conditions => ["created_at > ? and created_at <= ? and remote_ip not in (#{@blocked_ips})", 1.hour.ago, Time.now]).size
+      @hours_unique << Stat.all(:conditions => ["created_at > ? and created_at <= ? and remote_ip not in (#{@blocked_ips})", 1.hour.ago, Time.now]).map(&:remote_ip).uniq.size
+      23.times do |n|
+        @hours << Stat.all(:conditions => ["created_at > ? and created_at <= ? and remote_ip not in (#{@blocked_ips})", (n.to_i+2).hours.ago, (n.to_i+1).hours.ago]).size
+        @hours_unique << Stat.all(:conditions => ["created_at > ? and created_at <= ? and remote_ip not in (#{@blocked_ips})", (n.to_i+2).hours.ago, (n.to_i+1).hours.ago]).map(&:remote_ip).uniq.size
+      end
       @today = Stat.all(:conditions => ["created_at > ? and remote_ip not in (#{@blocked_ips})", Time.now.beginning_of_day])
       @today_unique = Stat.all(:conditions => ["created_at > ? and remote_ip not in (#{@blocked_ips})", Time.now.beginning_of_day]).map(&:remote_ip).uniq.size
       @yesterday = Stat.all(:conditions => ["created_at < ? and created_at > ? and remote_ip not in (#{@blocked_ips})", Time.now.beginning_of_day, Time.now.beginning_of_day - Time.now.beginning_of_day - 1.days ]).size

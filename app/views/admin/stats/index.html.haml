@@ -21,7 +21,8 @@
       %td== #{@yesterday} views, #{@yesterday_unique} unique
       %td== #{@month} views, #{@month_unique} unique
       %td== #{@total} views, #{@total_unique} unique
-  #chart_div
+  #week_div
+  #day_div
   - content_for :head do
     <script type="text/javascript">
     Array.prototype.reduce = undefined;
@@ -81,19 +82,41 @@
     ==['#{day_of_the_week(3.days.ago.wday)}',#{@day_4}, #{@day_4_unique}],
     ==['#{day_of_the_week(4.days.ago.wday)}',#{@day_5}, #{@day_5_unique}],
     ==['#{day_of_the_week(5.days.ago.wday)}',#{@day_6}, #{@day_6_unique}],
-    ==['#{day_of_the_week(6.days.ago.wday)}',#{@day_7}, #{@day_7_unique}],
+    ==['#{day_of_the_week(6.days.ago.wday)}',#{@day_7}, #{@day_7_unique}]
     ]);
 
     var options = {
     width: 870, 
     height: 240,
     colors: ["#005381", "#FDCE1A"],
-    title: 'Stats'
+    title: 'Stats for this week.'
     };
 
-    var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+    var chart = new google.visualization.ColumnChart(document.getElementById('week_div'));
+    chart.draw(data, options);
+    
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Hour');
+    data.addColumn('number', 'Views');
+    data.addColumn('number', 'Unique Visitors');
+    data.addRows([
+    - @hours.each_with_index do |hour, index|
+      ==['#{(Time.now - (index.to_i).hour).strftime("%I:%M %p")}',#{hour}, #{@hours_unique[index]}],
+    ]);
+
+    var options = {
+    width: 870, 
+    height: 240,
+    colors: ["#005381", "#FDCE1A"],
+    title: 'Stats for the last 24 hours.'
+    };
+
+    var chart = new google.visualization.LineChart(document.getElementById('day_div'));
     chart.draw(data, options);
     }
+    
+
+
 %br
 = will_paginate @stats
 
