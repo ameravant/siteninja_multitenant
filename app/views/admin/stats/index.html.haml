@@ -76,12 +76,12 @@
     data.addColumn('number', 'Views');
     data.addColumn('number', 'Unique Visitors');
     data.addRows([
-    - @days.each_with_index do |day, index|
-      ==['#{day_of_the_week(index.to_i.days.ago.wday)}',#{day}, #{@days_unique[index].to_i}],
+    - @days.reverse.each_with_index do |day, index|
+      ==['#{day_of_the_week((6.days.ago).advance(:days => index.to_i).wday)}',#{day}, #{@days_unique.reverse[index].to_i}],
     ]);
 
     var options = {
-    width: 870, 
+    width: 615, 
     height: 240,
     colors: ["#005381", "#FDCE1A"],
     title: 'Stats for the past week.'
@@ -95,8 +95,8 @@
     data.addColumn('number', 'Views');
     data.addColumn('number', 'Unique Visitors');
     data.addRows([
-    - @hours.each_with_index do |hour, index|
-      ==['#{(Time.now - (index.to_i).hour).strftime("%I:%M %p")}',#{hour}, #{@hours_unique[index]}],
+    - @hours.reverse.each_with_index do |hour, index|
+      ==['#{(23.hours.ago).advance(:hours => index.to_i).strftime("%I:%M %p")}',#{hour}, #{@hours_unique.reverse[index]}],
     ]);
 
     var options = {
