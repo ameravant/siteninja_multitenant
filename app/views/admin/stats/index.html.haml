@@ -17,8 +17,8 @@
       %th Month
       %th All Time
     %tr
-      %td== #{@today} views, #{@today_unique} unique
-      %td== #{@yesterday} views, #{@yesterday_unique} unique
+      %td== #{@days.first} views, #{@days_unique.first} unique
+      %td== #{@days[1]} views, #{@days_unique[1]} unique
       %td== #{@month} views, #{@month_unique} unique
       %td== #{@total} views, #{@total_unique} unique
   #week_div
@@ -84,7 +84,7 @@
     width: 870, 
     height: 240,
     colors: ["#005381", "#FDCE1A"],
-    title: 'Stats for this week.'
+    title: 'Stats for the past week.'
     };
 
     var chart = new google.visualization.ColumnChart(document.getElementById('week_div'));
