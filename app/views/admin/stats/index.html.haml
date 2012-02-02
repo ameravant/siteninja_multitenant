@@ -17,7 +17,7 @@
       %th Month
       %th All Time
     %tr
-      %td== #{@today.size} views, #{@today_unique} unique
+      %td== #{@today} views, #{@today_unique} unique
       %td== #{@yesterday} views, #{@yesterday_unique} unique
       %td== #{@month} views, #{@month_unique} unique
       %td== #{@total} views, #{@total_unique} unique
@@ -76,13 +76,8 @@
     data.addColumn('number', 'Views');
     data.addColumn('number', 'Unique Visitors');
     data.addRows([
-    ==['#{day_of_the_week(Time.now.wday)}',#{@today.size}, #{@today_unique}],
-    ==['#{day_of_the_week(1.day.ago.wday)}',#{@yesterday}, #{@yesterday_unique}],
-    ==['#{day_of_the_week(2.days.ago.wday)}',#{@day_3}, #{@day_3_unique}],
-    ==['#{day_of_the_week(3.days.ago.wday)}',#{@day_4}, #{@day_4_unique}],
-    ==['#{day_of_the_week(4.days.ago.wday)}',#{@day_5}, #{@day_5_unique}],
-    ==['#{day_of_the_week(5.days.ago.wday)}',#{@day_6}, #{@day_6_unique}],
-    ==['#{day_of_the_week(6.days.ago.wday)}',#{@day_7}, #{@day_7_unique}]
+    - @days.each_with_index do |day, index|
+      ==['#{day_of_the_week(index.to_i.days.ago.wday)}',#{day}, #{@days_unique[index].to_i}],
     ]);
 
     var options = {
