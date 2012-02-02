@@ -5,7 +5,7 @@ class Admin::StatsController < AdminController
 
   def index
     @tmplate.doctype == "5"
-    @blocked_ips = @cms_config['site_settings']['blocked_ips'].blank? ? "" : @cms_config['site_settings']['blocked_ips'].gsub(" ", "").split(",").collect {|i| '"' + i + '"'}.join(",")
+    @blocked_ips = CMS_CONFIG['site_settings']['blocked_ips'].blank? ? "" : CMS_CONFIG['site_settings']['blocked_ips'].gsub(" ", "").split(",").collect {|i| '"' + i + '"'}.join(",")
     if params[:account_id]
       @account = Account.find(params[:account_id])
       add_breadcrumb @account.title, admin_account_path(@account.id)

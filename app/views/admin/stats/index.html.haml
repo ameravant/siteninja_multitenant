@@ -76,7 +76,7 @@
     data.addColumn('number', 'Views');
     data.addColumn('number', 'Unique Visitors');
     data.addRows([
-    - @days.each_with_index do |day, index|
+    - @days.reverse.each_with_index do |day, index|
       ==['#{day_of_the_week(index.to_i.days.ago.wday)}',#{day}, #{@days_unique[index].to_i}],
     ]);
 
@@ -95,7 +95,7 @@
     data.addColumn('number', 'Views');
     data.addColumn('number', 'Unique Visitors');
     data.addRows([
-    - @hours.each_with_index do |hour, index|
+    - @hours.reverse.each_with_index do |hour, index|
       ==['#{(Time.now - (index.to_i).hour).strftime("%I:%M %p")}',#{hour}, #{@hours_unique[index]}],
     ]);
 
