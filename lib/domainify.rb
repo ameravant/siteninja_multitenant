@@ -45,7 +45,7 @@ module Domainify #:nodoc:
       def self.find(*args)
         if !$CURRENT_ACCOUNT.nil?
           unless $CURRENT_ACCOUNT.is_master? && $ADMIN
-            with_scope(:find=>{ :conditions=> ['account_id = ? or master = ?', $CURRENT_ACCOUNT.id, true] }) do # I think the answer is to add a global boolean to everything and 
+            with_scope(:find=>{ :conditions=> ['account_id = ?', $CURRENT_ACCOUNT.id] }) do # I think the answer is to add a global boolean to everything and 
               super(*args)                                                                # make the conditions either account_id or global == true && visible == true
             end
           else
