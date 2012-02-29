@@ -13,6 +13,10 @@ class Account < ActiveRecord::Base
     self.title == 'master' && self.domain.nil?
   end
   
+  def yml_path
+    "#{RAILS_ROOT}/config/domains/#{self.directory}/cms.yml"
+  end
+  
   def name
     self.title
   end
