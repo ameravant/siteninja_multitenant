@@ -65,11 +65,13 @@ class Admin::StatsController < AdminController
       
       @days = []
       @days_unique = []
-      @days << Stat.all(:conditions => ["created_at >= ? and remote_ip not in (#{@blocked_ips})", Time.now.beginning_of_day]).size
-      @days_unique << Stat.all(:conditions => ["created_at >= ? and remote_ip not in (#{@blocked_ips})", Time.now.beginning_of_day]).map(&:remote_ip).uniq.size
+      day = Stat.all(:conditions => ["created_at >= ? and remote_ip not in (#{@blocked_ips})", Time.now.beginning_of_day])
+      @days << day.size
+      @days_unique << day.map(&:remote_ip).uniq.size
       6.times do |n|
-        @days << Stat.all(:conditions => ["created_at < ? and created_at >= ? and remote_ip not in (#{@blocked_ips})", (n.to_i).days.ago.beginning_of_day, (n.to_i+1).days.ago.beginning_of_day ]).size
-        @days_unique << Stat.all(:conditions => ["created_at < ? and created_at >= ? and remote_ip not in (#{@blocked_ips})", (n.to_i).days.ago.beginning_of_day, (n.to_i+1).days.ago.beginning_of_day ]).map(&:remote_ip).uniq.size
+        day = Stat.all(:conditions => ["created_at < ? and created_at >= ? and remote_ip not in (#{@blocked_ips})", (n.to_i).days.ago.beginning_of_day, (n.to_i+1).days.ago.beginning_of_day ])
+        @days << day.size
+        @days_unique << day.map(&:remote_ip).uniq.size
       end
       
       @month = Stat.all(:conditions => ["created_at > ? and remote_ip not in (#{@blocked_ips})", Time.now.beginning_of_month]).size
@@ -80,7 +82,7 @@ class Admin::StatsController < AdminController
     end
   end
   
-    def stats_frame
+  def stats_frame
     session[:layout] = "fancy"
     @blocked_ips = CMS_CONFIG['site_settings']['blocked_ips'].blank? ? "" : CMS_CONFIG['site_settings']['blocked_ips'].gsub(" ", "").split(",").collect {|i| '"' + i + '"'}.join(",")
     stats = Stat.all(:conditions => ["account_id = ? and created_at > ? and remote_ip not in (#{@blocked_ips})", $CURRENT_ACCOUNT.id, (Time.now.beginning_of_month - 1.days)])
@@ -89,31 +91,36 @@ class Admin::StatsController < AdminController
     day = Time.now
     #@hours << Stat.all(:conditions => ["account_id = ? and created_at > ? and created_at <= ? and remote_ip not in (#{@blocked_ips})", $CURRENT_ACCOUNT.id, 1.hour.ago, Time.now]).size
     #@hours_unique << Stat.all(:conditions => ["account_id = ? and created_at > ? and created_at <= ? and remote_ip not in (#{@blocked_ips})", $CURRENT_ACCOUNT.id, 1.hour.ago, Time.now]).map(&:remote_ip).uniq.size
-    @hours << stats.reject{|x| !(x.created_at > 1.hour.ago and x.created_at <= Time.now)}.size
-    @hours_unique << stats.reject{|x| !(x.created_at > 1.hour.ago and x.created_at <= Time.now)}.map(&:remote_ip).uniq.size
+    hour = stats.reject{|x| !(x.created_at > 1.hour.ago and x.created_at <= Time.now)}
+    @hours << hour.size
+    @hours_unique << hour.map(&:remote_ip).uniq.size
     23.times do |n|
       # @hours << Stat.all(:conditions => ["account_id = ? and created_at > ? and created_at <= ? and remote_ip not in (#{@blocked_ips})", $CURRENT_ACCOUNT.id, (n.to_i+2).hours.ago, (n.to_i+1).hours.ago]).size
       # @hours_unique << Stat.all(:conditions => ["account_id = ? and created_at > ? and created_at <= ? and remote_ip not in (#{@blocked_ips})", $CURRENT_ACCOUNT.id, (n.to_i+2).hours.ago, (n.to_i+1).hours.ago]).map(&:remote_ip).uniq.size
-      @hours << stats.reject{|x| !(x.created_at > (n.to_i+2).hours.ago and x.created_at <= (n.to_i+1).hours.ago)}.size
-      @hours_unique << stats.reject{|x| !(x.created_at > (n.to_i+2).hours.ago and x.created_at <= (n.to_i+1).hours.ago)}.map(&:remote_ip).uniq.size
+      hour = stats.reject{|x| !(x.created_at > (n.to_i+2).hours.ago and x.created_at <= (n.to_i+1).hours.ago)}
+      @hours << hour.size
+      @hours_unique << hour.map(&:remote_ip).uniq.size
     end
     
     @days = []
     @days_unique = []
     # @days << Stat.all(:conditions => ["account_id = ? and created_at >= ? and remote_ip not in (#{@blocked_ips})", $CURRENT_ACCOUNT.id, Time.now.beginning_of_day]).size
     # @days_unique << Stat.all(:conditions => ["account_id = ? and created_at >= ? and remote_ip not in (#{@blocked_ips})", $CURRENT_ACCOUNT.id, Time.now.beginning_of_day]).map(&:remote_ip).uniq.size
-    @days << stats.reject{|x| !(x.created_at >= Time.now.beginning_of_day)}.size
-    @days_unique << stats.reject{|x| !(x.created_at >= Time.now.beginning_of_day)}.map(&:remote_ip).uniq.size
+    day = stats.reject{|x| !(x.created_at >= Time.now.beginning_of_day)}
+    @days << day.size
+    @days_unique << day.map(&:remote_ip).uniq.size
     6.times do |n|
       # @days << Stat.all(:conditions => ["account_id = ? and created_at < ? and created_at >= ? and remote_ip not in (#{@blocked_ips})", $CURRENT_ACCOUNT.id, (n.to_i).days.ago.beginning_of_day, (n.to_i+1).days.ago.beginning_of_day ]).size
       # @days_unique << Stat.all(:conditions => ["account_id = ? and created_at < ? and created_at >= ? and remote_ip not in (#{@blocked_ips})", $CURRENT_ACCOUNT.id, (n.to_i).days.ago.beginning_of_day, (n.to_i+1).days.ago.beginning_of_day ]).map(&:remote_ip).uniq.size
-      @days << stats.reject{|x| !(x.created_at < (n.to_i).days.ago.beginning_of_day and x.created_at >= (n.to_i+1).days.ago.beginning_of_day)}.size
-      @days_unique << stats.reject{|x| !(x.created_at < (n.to_i).days.ago.beginning_of_day and x.created_at >= (n.to_i+1).days.ago.beginning_of_day)}.map(&:remote_ip).uniq.size
+      day = stats.reject{|x| !(x.created_at < (n.to_i).days.ago.beginning_of_day and x.created_at >= (n.to_i+1).days.ago.beginning_of_day)}
+      @days << day.size
+      @days_unique << day.map(&:remote_ip).uniq.size
     end
     # @month = Stat.all(:conditions => ["account_id = ? and created_at > ? and remote_ip not in (#{@blocked_ips})", $CURRENT_ACCOUNT.id, Time.now.beginning_of_month]).size
     # @month_unique = Stat.all(:conditions => ["account_id = ? and created_at > ? and remote_ip not in (#{@blocked_ips})", $CURRENT_ACCOUNT.id, Time.now.beginning_of_month]).map(&:remote_ip).uniq.size
-    @month = stats.reject{|x| !(x.created_at >= Time.now.beginning_of_month)}.size
-    @month_unique = stats.reject{|x| !(x.created_at >= Time.now.beginning_of_month)}.map(&:remote_ip).uniq.size
+    month = stats.reject{|x| !(x.created_at >= Time.now.beginning_of_month)}
+    @month = month.size
+    @month_unique = month.map(&:remote_ip).uniq.size
   end
   
   def super_admin_check
