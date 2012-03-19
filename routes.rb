@@ -12,7 +12,7 @@ namespace :admin do |admin|
     end
     account.resources :stats
   end
-  admin.resources :stats
+  admin.resources :stats, :collection => { :stats_frame => :get } 
 end
 # for klass in klasses
 #   resources klass, :belongs_to => :account
