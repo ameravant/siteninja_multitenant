@@ -1,4 +1,4 @@
-- if File.read(session[:stats_path]) == "updated"
+- if @stats['status'] == "updated"
   %div{:style => "width: 550px;"}
   %h2 Traffic Stats
   %table.full_width
@@ -7,9 +7,9 @@
       %th Yesterday
       %th Month
     %tr
-      %td== #{@days.first} Views, #{@days_unique.first} Uniques
-      %td== #{@days[1]} Views, #{@days_unique[1]} Uniques
-      %td== #{@month} Views, #{@month_unique} Uniques
+      %td== #{@stats['days'].split(",").first} Views, #{@stats['days_unique'].split(",").first} Uniques
+      %td== #{@stats['days'].split(",")[1]} Views, #{@stats['days_unique'].split(",")[1]} Uniques
+      %td== #{@stats['month']} Views, #{@stats['month_unique']} Uniques
   #day_div
   #week_div
   - content_for :head do
@@ -74,8 +74,8 @@
     data.addColumn('number', 'Views');
     data.addColumn('number', 'Unique Visitors');
     data.addRows([
-    - @days.reverse.each_with_index do |day, index|
-      ==['#{day_of_the_week((6.days.ago).advance(:days => index.to_i).wday)}',#{day}, #{@days_unique.reverse[index].to_i}],
+    - @stats['days'].split(",").reverse.each_with_index do |day, index|
+      ==['#{day_of_the_week((6.days.ago).advance(:days => index.to_i).wday)}',#{day}, #{@stats['days_unique'].split(",").reverse[index].to_i}],
     ]);
   
   
@@ -95,8 +95,8 @@
     data.addColumn('number', 'Views');
     data.addColumn('number', 'Unique Visitors');
     data.addRows([
-    - @hours.reverse.each_with_index do |hour, index|
-      ==['#{(23.hours.ago).advance(:hours => index.to_i).strftime("%I:%M %p")}',#{hour}, #{@hours_unique.reverse[index]}],
+    - @stats['hours'].split(",").reverse.each_with_index do |hour, index|
+      ==['#{(23.hours.ago).advance(:hours => index.to_i).strftime("%I:%M %p")}',#{hour}, #{@stats['hours_unique'].split(",").reverse[index]}],
     ]);
 
     var options = {
@@ -113,5 +113,5 @@
   ==#{spinner} Updating Stats
   - content_for :head do
     :javascript
-      setTimeout(window.location.reload(), 1000);
+      setTimeout(window.location.reload(), 10000);
     
