@@ -1,3 +1,12 @@
+- content_for :head do
+  %style{:type => "text/css"}
+    ==.full_width td.detail { padding-top: 8px !important; }
+    ==#side-column { margin: 42px 0 0 0 !important; }
+    ==.count { font-weight: bold; color: #005381; font-size: 1.2em; text-align: right; }
+    ==#week_div, #day_div { margin-left: -45px; }
+    ==#main-column { overflow: hidden; }
+    ==#updates { font-size: .8em; line-height: 1.4em; }
+    ==#main-column, #wrapper-outer, #wrapper-middle, #wrapper-inner, #content-outer, #content-middle, #content-inner { width: 550px !important; margin: 0 !important; padding: 0 !important; }
 - if @stats['status'] == "updated"
   %div{:style => "width: 550px;"}
   %h2 Traffic Stats
@@ -16,14 +25,6 @@
     <script type="text/javascript">
     Array.prototype.reduce = undefined;
     </script>
-    %style{:type => "text/css"}
-      ==.full_width td.detail { padding-top: 8px !important; }
-      ==#side-column { margin: 42px 0 0 0 !important; }
-      ==.count { font-weight: bold; color: #005381; font-size: 1.2em; text-align: right; }
-      ==#week_div, #day_div { margin-left: -45px; }
-      ==#main-column { overflow: hidden; }
-      ==#updates { font-size: .8em; line-height: 1.4em; }
-      ==#main-column, #wrapper-outer, #wrapper-middle, #wrapper-inner, #content-outer, #content-middle, #content-inner { width: 550px !important; margin: 0 !important; padding: 0 !important; }
     %script{:type => "text/javascript"}
       if(!window['googleLT_']){window['googleLT_']=(new Date()).getTime();}if (!window['google']) {
       window['google'] = {};
@@ -113,5 +114,5 @@
   ==#{spinner} Updating Stats
   - content_for :head do
     :javascript
-      setTimeout(function(){window.location.reload()}, 1000);
+      setTimeout(function(){window.location.reload()}, 4000);
     
