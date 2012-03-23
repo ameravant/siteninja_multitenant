@@ -44,8 +44,10 @@ module Domainify #:nodoc:
       #modify the find method to add a default scope
       def self.find(*args)
         if !$CURRENT_ACCOUNT.nil?
+          table = self.to_s.underscore.pluralize
+          table = "person_groups" if table == "event_registration_groups"
           unless $CURRENT_ACCOUNT.is_master? && $ADMIN
-            with_scope(:find=>{ :conditions=> ["#{self.to_s.underscore.pluralize}.account_id = ? or #{self.to_s.underscore.pluralize}.master = ?", $CURRENT_ACCOUNT.id, true] }) do # I think the answer is to add a global boolean to everything and 
+            with_scope(:find=>{ :conditions=> ["#{table}.account_id = ? or #{table}.master = ?", $CURRENT_ACCOUNT.id, true] }) do # I think the answer is to add a global boolean to everything and 
               super(*args)                                                                # make the conditions either account_id or global == true && visible == true
             end
           else
