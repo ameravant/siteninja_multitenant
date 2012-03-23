@@ -93,19 +93,19 @@ namespace :db do
     user.person_id = person.id
     user.save
 
-    # Create the Ameravant logins
-    michael = Person.create(:first_name => "Michael", :last_name => "Kramer", :email => "michael@ameravant.com", :account_id => $CURRENT_ACCOUNT.id)
-    michael.person_groups << admin
-    user = User.create(:login => "michael", :password => "123Mail", :password_confirmation => "123Mail", :active => true, :account_id => $CURRENT_ACCOUNT.id, :is_super_user => true)
-    user.is_super_user = true
-    user.person_id = michael.id
-    user.save
-    dave = Person.create(:first_name => "Dave", :last_name => "Myers", :email => "dave@ameravant.com", :account_id => $CURRENT_ACCOUNT.id)
-    dave.person_groups << admin
-    user = User.create(:login => "dave", :password => "123Mail", :password_confirmation => "123Mail", :active => true, :account_id => $CURRENT_ACCOUNT.id)
-    user.is_super_user = true
-    user.person_id = dave.id
-    user.save
+    # # Create the Ameravant logins
+    # michael = Person.create(:first_name => "Michael", :last_name => "Kramer", :email => "michael@ameravant.com", :account_id => $CURRENT_ACCOUNT.id)
+    # michael.person_groups << admin
+    # user = User.create(:login => "michael", :password => "123Mail", :password_confirmation => "123Mail", :active => true, :account_id => $CURRENT_ACCOUNT.id, :is_super_user => true)
+    # user.is_super_user = true
+    # user.person_id = michael.id
+    # user.save
+    # dave = Person.create(:first_name => "Dave", :last_name => "Myers", :email => "dave@ameravant.com", :account_id => $CURRENT_ACCOUNT.id)
+    # dave.person_groups << admin
+    # user = User.create(:login => "dave", :password => "123Mail", :password_confirmation => "123Mail", :active => true, :account_id => $CURRENT_ACCOUNT.id)
+    # user.is_super_user = true
+    # user.person_id = dave.id
+    # user.save
     
     
     feature = ColumnSectionType.first(:conditions => {:title => "Feature Box"})
