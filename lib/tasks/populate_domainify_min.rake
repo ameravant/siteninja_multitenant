@@ -250,7 +250,7 @@ namespace :db do
           <span class="hmenu">By {{article.author}} on {{article.date}} at {{article.time}} {{article.list_of_article_categories}}</span>
         </div>
         <div class="article_body">{{article.blurb | simple_format}}</div>
-        <a href="/article/194-website-redesign-before-and-after">Read more...</a>
+        <a href="{{article.path}}">Read more...</a>
         <div class="clear"></div>
       </div>',
       :medium_article_for_index => 
@@ -266,7 +266,7 @@ namespace :db do
           <span class="hmenu">By {{article.author}} on {{article.date}} at {{article.time}} {{article.list_of_article_categories}}</span>
         </div>
         <div class="article_body">{{article.blurb | simple_format}}</div>
-        <a href="/article/194-website-redesign-before-and-after">Read more...</a>
+        <a href="{{article.path}}">Read more...</a>
         <div class="clear"></div>
       </div>',
       :large_article_for_index => 
@@ -279,7 +279,7 @@ namespace :db do
           <span class="hmenu">By {{article.author}} on {{article.date}} at {{article.time}} {{article.list_of_article_categories}}</span>
         </div>
         <div class="article_body">{{article.blurb | simple_format}}</div>
-        <a href="/article/194-website-redesign-before-and-after">Read more...</a>
+        <a href="{{article.path}}">Read more...</a>
         <div class="clear"></div>
       </div>',
       :articles_index =>
