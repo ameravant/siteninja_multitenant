@@ -1,8 +1,20 @@
 class AddAccountIdToVideos < ActiveRecord::Migration
   def self.up
-    add_column :videos, :account_id, :integer, :default => 1
-    add_column :videos, :master, :boolean, :default => false
-    add_index :videos, :account_id
+    begin
+      add_column :videos, :account_id, :integer, :default => 1
+    rescue Exception => e
+      
+    end
+    begin
+      add_column :videos, :master, :boolean, :default => false      
+    rescue Exception => e
+      
+    end
+    begin
+      add_index :videos, :account_id
+    rescue Exception => e
+      
+    end
   end
 
   def self.down

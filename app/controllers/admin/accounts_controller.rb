@@ -10,12 +10,14 @@ class Admin::AccountsController < AdminController
   def new
     @account = Account.new
     @current_config = @cms_config
+    @layouts = Column.all(:conditions => {:master => true, :column_location => "master"})
   end
   def edit
   end
   def create
     @account = Account.new(params[:account])
     @current_config = @cms_config
+    @layouts = Column.all(:conditions => {:master => true, :column_location => "master"})
     Account.create(:title => "master") unless Account.count > 0
     @master_settings = Account.master.first.setting
     if @account.save
@@ -98,6 +100,17 @@ class Admin::AccountsController < AdminController
         params[:cms_config][:modules_members] ? cms_yml['modules']['members'] = true : cms_yml['modules']['members'] = false
         params[:cms_config][:features_feature_box] ? cms_yml['features']['feature_box'] = true : cms_yml['features']['feature_box'] = false
         params[:cms_config][:features_testimonials] ? cms_yml['features']['testimonials'] = true : cms_yml['features']['testimonials'] = false
+        params[:cms_config][:enable_responsive_layouts] ? cms_yml['site_settings']['enable_responsive_layouts'] = true : cms_yml['site_settings']['enable_responsive_layouts'] = false
+        cms_yml['site_settings']['color_scheme_id'] = params[:cms_config][:color_scheme_id]
+        cms_yml['site_settings']['master_layout_id'] = params[:cms_config][:master_layout_id]
+        cms_yml['site_settings']['page_layout_id'] = params[:cms_config][:page_layout_id]
+        cms_yml['site_settings']['homepage_layout_id'] = params[:cms_config][:homepage_layout_id]
+        cms_yml['site_settings']['event_layout_id'] = params[:cms_config][:event_layout_id]
+        cms_yml['site_settings']['events_layout_id'] = params[:cms_config][:events_layout_id]
+        cms_yml['site_settings']['product_layout_id'] = params[:cms_config][:product_layout_id]
+        cms_yml['site_settings']['products_layout_id'] = params[:cms_config][:products_layout_id]
+        cms_yml['site_settings']['links_layout_id'] = params[:cms_config][:links_layout_id]
+        cms_yml['site_settings']['image_layout_id'] = params[:cms_config][:image_layout_id]
       # end
       File.open("#{path}/current/config/domains/#{@account.directory}/cms.yml", 'w') { |f| YAML.dump(cms_yml, f) }
       # @database_yml = YAML::load_file("#{path}/current/config/database.yml")
@@ -111,7 +124,11 @@ class Admin::AccountsController < AdminController
     else
       @account.update_attributes(:directory => path_safe(@account.title))
       path = RAILS_ROOT
-      make_initial_domain_folder(path) unless File.exists?("#{path}/config/domains") && File.exists?("#{path}/shared/config")
+      if Rails.env.production?
+        make_initial_domain_folder(path) unless File.exists?("#{path}/config/domains") && File.exists?("#{path}/shared/config")
+      else
+        make_initial_domain_folder(path) unless File.exists?("#{path}/config/domains")
+      end
       system "mkdir #{path}/config/domains/#{@account.directory}"
       system "cp #{path}/config/cms.yml #{path}/config/domains/#{@account.directory}/cms.yml"
       cms_yml = YAML::load_file("#{path}/config/domains/#{@account.directory}/cms.yml")
@@ -126,6 +143,17 @@ class Admin::AccountsController < AdminController
       params[:cms_config][:modules_members] ? cms_yml['modules']['members'] = true : cms_yml['modules']['members'] = false
       params[:cms_config][:features_feature_box] ? cms_yml['features']['feature_box'] = true : cms_yml['features']['feature_box'] = false
       params[:cms_config][:features_testimonials] ? cms_yml['features']['testimonials'] = true : cms_yml['features']['testimonials'] = false
+      params[:cms_config][:enable_responsive_layouts] ? cms_yml['site_settings']['enable_responsive_layouts'] = true : cms_yml['site_settings']['enable_responsive_layouts'] = false
+      cms_yml['site_settings']['color_scheme_id'] = params[:cms_config][:color_scheme_id]
+      cms_yml['site_settings']['master_layout_id'] = params[:cms_config][:master_layout_id]
+      cms_yml['site_settings']['page_layout_id'] = params[:cms_config][:page_layout_id]
+      cms_yml['site_settings']['homepage_layout_id'] = params[:cms_config][:homepage_layout_id]
+      cms_yml['site_settings']['event_layout_id'] = params[:cms_config][:event_layout_id]
+      cms_yml['site_settings']['events_layout_id'] = params[:cms_config][:events_layout_id]
+      cms_yml['site_settings']['product_layout_id'] = params[:cms_config][:product_layout_id]
+      cms_yml['site_settings']['products_layout_id'] = params[:cms_config][:products_layout_id]
+      cms_yml['site_settings']['links_layout_id'] = params[:cms_config][:links_layout_id]
+      cms_yml['site_settings']['image_layout_id'] = params[:cms_config][:image_layout_id]
       File.open("#{path}/config/domains/#{@account.directory}/cms.yml", 'w') { |f| YAML.dump(cms_yml, f) }
       # @database_yml = YAML::load_file("#{path}/config/database.yml")
       # @database_yml[@account.directory] = {"adapter" => params[:database][:adapter], "database" => params[:database][:database], "host" => params[:database][:host], "username" => params[:database][:username], "password" => params[:database][:password]}
@@ -144,11 +172,16 @@ class Admin::AccountsController < AdminController
   end
   def add_basic_data
     clear_current_account
-    system "rake db:populate_domainify_min"
-    s = @master_settings.clone
-    s.account_id = @account.id
-    s.save
+    if params[:cms_config][:enable_responsive_layouts]
+      system "rake db:populate_domainify_min"
+    else
+      system "rake db:populate_domainify_min_old"
+      s = @master_settings.clone
+      s.account_id = @account.id
+      s.save
+    end
   end
+  
   def clear_current_account
     $CURRENT_ACCOUNT = nil
     $CURRENT_ACCOUNT = Account.find(params[:account_id]) if params[:account_id]

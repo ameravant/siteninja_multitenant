@@ -37,13 +37,15 @@
           %br
           = check_box_tag 'cms_config[features_feature_box]', @current_config['features']['feature_box'], @current_config['features']['feature_box']
           = label_tag 'cms_config[features_feature_box]', "Feature Box"
+        
+              
     #main-form-options
       %dl
         %dt.title.form-label= f.label :title
-        %dd.form-option= f.text_field :title, :class => "big"
+        %dd.form-option= f.text_field :title, :class => "big-input"
         %dt.form-label= f.label :domain, "Domains"
         %dd.form-option
-          = f.text_field :domain, :class => "big"
+          = f.text_field :domain, :class => "big-input"
           .note 
             All domains associated with the account, comma separated, without http://
             %br
@@ -64,8 +66,52 @@
           %dd.form-option= text_field_tag 'database[username]'
           %dt.form-label= label_tag 'database[password]', "Password"
           %dd.form-option= text_field_tag 'database[password]'
+      - if @account.id.blank?
+        .checkboxes
+          = check_box_tag 'cms_config[enable_responsive_layouts]', @current_config['site_settings']['enable_responsive_layouts'], @current_config['site_settings']['enable_responsive_layouts'], :onclick => "jQuery('.theme-and-layouts').slideToggle(300)"
+          = label_tag 'cms_config[enable_responsive_layouts]', "Enable Responsive Layouts"
+        .theme-and-layouts
+          %h3 Theme and Layouts
+          .note Theme and layouts get assigned to the account's Default Template.
+          %dl#theme-and-layouts
+            %dt.form-label= label_tag 'cms_config[color_id]', "Theme", :class => "title"
+            %dd.form-option
+              =# select_tag 'cms_config[color_scheme_id]', options_for_select(ColorScheme.all(:conditions => {:master => true}).collect{|c| ["#{c.theme.title} - #{c.title}", c.id]}.insert(0, ["Select a Theme & Color Scheme", 0]))
+              = select_tag 'cms_config[color_scheme_id]', options_for_select(ColorScheme.all(:conditions => {:master => true}).collect{|c| ["#{c.theme.title} - #{c.title}", c.id]})
+            %dt.form-label= label_tag 'cms_config[master_layout_id]', "Master Layout", :class => "title"
+            %dd.form-option
+              = select_tag 'cms_config[master_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "master"}).collect{|c| [c.title, c.id]}, Column.find_by_title("Default Master Layout").id)
+            %dt.form-label= label_tag 'cms_config[homepage_layout_id]', "Homepage Layout", :class => "title"
+            %dd.form-option
+              = select_tag 'cms_config[homepage_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "main_column"}).collect{|c| [c.title, c.id]}, Column.find_by_title("Default Homepage Layout").id)
+            %dt.form-label= label_tag 'cms_config[page_layout_id]', "Page Layout", :class => "title"
+            %dd.form-option
+              = select_tag 'cms_config[page_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "main_column"}).collect{|c| [c.title, c.id]}, Column.find_by_title("Default Page Layout").id)
+            %dt.form-label= label_tag 'cms_config[blog_layout_id]', "Blog Layout", :class => "title"
+            %dd.form-option
+              = select_tag 'cms_config[blog_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "main_column"}).collect{|c| [c.title, c.id]}, Column.find_by_title("Default Blog Layout").id)
+            %dt.form-label= label_tag 'cms_config[events_layout_id]', "Events Index", :class => "title"
+            %dd.form-option
+              = select_tag 'cms_config[events_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "main_column"}).collect{|c| [c.title, c.id]}, Column.find_by_title("Default Events Layout").id)
+            %dt.form-label= label_tag 'cms_config[event_layout_id]', "Event Detail", :class => "title"
+            %dd.form-option
+              = select_tag 'cms_config[event_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "event"}).collect{|c| [c.title, c.id]})
+            %dt.form-label= label_tag 'cms_config[products_layout_id]', "Products Index", :class => "title"
+            %dd.form-option
+              = select_tag 'cms_config[products_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "main_column"}).collect{|c| [c.title, c.id]}, Column.find_by_title("Default Products Layout").id)
+            %dt.form-label= label_tag 'cms_config[product_layout_id]', "Product Detail", :class => "title"
+            %dd.form-option
+              = select_tag 'cms_config[product_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "product"}).collect{|c| [c.title, c.id]})
+            %dt.form-label= label_tag 'cms_config[links_layout_id]', "Links Index", :class => "title"
+            %dd.form-option
+              = select_tag 'cms_config[links_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "main_column"}).collect{|c| [c.title, c.id]}, Column.find_by_title("Default Links Layout").id)
+            %dt.form-label= label_tag 'cms_config[image_layout_id]', "Image Detail", :class => "title"
+            %dd.form-option
+              = select_tag 'cms_config[image_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "image"}).collect{|c| [c.title, c.id]})
     = clear
     = f.submit
   - content_for :head do
     %style{:type => "text/css"}
       div#main-form-options { width: 520px; float: left; }
+      ==#theme-and-layouts dt { float: left; margin: 0 10px 0 0; width: 200px; }
+      ==#theme-and-layouts dd.form-option { padding: 0 0 10px 0; }

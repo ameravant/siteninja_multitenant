@@ -2,7 +2,11 @@ class AddLegacyIdToAccounts < ActiveRecord::Migration
   def self.up
     for table_name in TableNames
       if ActiveRecord::Base.connection.tables.include?(table_name)
-        add_column table_name.to_sym, :legacy_id, :integer
+        begin
+          add_column table_name.to_sym, :legacy_id, :integer
+        rescue Exception => e
+          
+        end
       end
     end
   end
