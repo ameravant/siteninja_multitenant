@@ -83,15 +83,15 @@ class Admin::StatsController < AdminController
   end
   
   def stats_frame
-    if @master_config == @cms_config
-      stats_path = "#{RAILS_ROOT}/config/stats.json"
-    else
-      stats_path = "#{RAILS_ROOT}/config/domains/#{$CURRENT_ACCOUNT.directory}/stats.json"
-    end
-    @stats = ActiveSupport::JSON.decode(File.open(stats_path).read)
-    if @stats[:status] == "updated"
-      session[:layout] = "fancy"
-    end
+    # if @master_config == @cms_config
+    #   stats_path = "#{RAILS_ROOT}/config/stats.json"
+    # else
+    #   stats_path = "#{RAILS_ROOT}/config/domains/#{$CURRENT_ACCOUNT.directory}/stats.json"
+    # end
+    # @stats = ActiveSupport::JSON.decode(File.open(stats_path).read)
+    # if @stats[:status] == "updated"
+    #   session[:layout] = "fancy"
+    # end
   end
   
   def super_admin_check
