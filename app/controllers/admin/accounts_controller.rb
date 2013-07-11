@@ -102,7 +102,11 @@ class Admin::AccountsController < AdminController
         params[:cms_config][:features_testimonials] ? cms_yml['features']['testimonials'] = true : cms_yml['features']['testimonials'] = false
         params[:cms_config][:enable_responsive_layouts] ? cms_yml['site_settings']['enable_responsive_layouts'] = true : cms_yml['site_settings']['enable_responsive_layouts'] = false
         cms_yml['site_settings']['color_scheme_id'] = params[:cms_config][:color_scheme_id]
-        cms_yml['site_settings']['master_layout_id'] = params[:cms_config][:master_layout_id]
+        if params[:cms_config][:master_layout_id]
+          cms_yml['site_settings']['master_layout_id'] = params[:cms_config][:master_layout_id]
+        else
+          cms_yml['site_settings']['master_layout_id'] = ColorScheme.find(params[:cms_config][:color_scheme_id]).theme.master_layout_id
+        end
         cms_yml['site_settings']['page_layout_id'] = params[:cms_config][:page_layout_id]
         cms_yml['site_settings']['homepage_layout_id'] = params[:cms_config][:homepage_layout_id]
         cms_yml['site_settings']['event_layout_id'] = params[:cms_config][:event_layout_id]

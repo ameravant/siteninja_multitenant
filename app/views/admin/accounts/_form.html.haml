@@ -71,43 +71,43 @@
           = check_box_tag 'cms_config[enable_responsive_layouts]', @current_config['site_settings']['enable_responsive_layouts'], @current_config['site_settings']['enable_responsive_layouts'], :onclick => "jQuery('.theme-and-layouts').slideToggle(300)"
           = label_tag 'cms_config[enable_responsive_layouts]', "Enable Responsive Layouts"
         .theme-and-layouts
-          %h3 Theme and Layouts
-          .note Theme and layouts get assigned to the account's Default Template.
           %dl#theme-and-layouts
             %dt.form-label= label_tag 'cms_config[color_id]', "Theme", :class => "title"
             %dd.form-option
               =# select_tag 'cms_config[color_scheme_id]', options_for_select(ColorScheme.all(:conditions => {:master => true}).collect{|c| ["#{c.theme.title} - #{c.title}", c.id]}.insert(0, ["Select a Theme & Color Scheme", 0]))
               = select_tag 'cms_config[color_scheme_id]', options_for_select(ColorScheme.all(:conditions => {:master => true}).collect{|c| ["#{c.theme.title} - #{c.title}", c.id]})
-            %dt.form-label= label_tag 'cms_config[master_layout_id]', "Master Layout", :class => "title"
-            %dd.form-option
-              = select_tag 'cms_config[master_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "master"}).collect{|c| [c.title, c.id]}, Column.find_by_title("Default Master Layout").id)
-            %dt.form-label= label_tag 'cms_config[homepage_layout_id]', "Homepage Layout", :class => "title"
-            %dd.form-option
-              = select_tag 'cms_config[homepage_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "main_column"}).collect{|c| [c.title, c.id]}, Column.find_by_title("Default Homepage Layout").id)
-            %dt.form-label= label_tag 'cms_config[page_layout_id]', "Page Layout", :class => "title"
-            %dd.form-option
-              = select_tag 'cms_config[page_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "main_column"}).collect{|c| [c.title, c.id]}, Column.find_by_title("Default Page Layout").id)
-            %dt.form-label= label_tag 'cms_config[blog_layout_id]', "Blog Layout", :class => "title"
-            %dd.form-option
-              = select_tag 'cms_config[blog_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "main_column"}).collect{|c| [c.title, c.id]}, Column.find_by_title("Default Blog Layout").id)
-            %dt.form-label= label_tag 'cms_config[events_layout_id]', "Events Index", :class => "title"
-            %dd.form-option
-              = select_tag 'cms_config[events_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "main_column"}).collect{|c| [c.title, c.id]}, Column.find_by_title("Default Events Layout").id)
-            %dt.form-label= label_tag 'cms_config[event_layout_id]', "Event Detail", :class => "title"
-            %dd.form-option
-              = select_tag 'cms_config[event_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "event"}).collect{|c| [c.title, c.id]})
-            %dt.form-label= label_tag 'cms_config[products_layout_id]', "Products Index", :class => "title"
-            %dd.form-option
-              = select_tag 'cms_config[products_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "main_column"}).collect{|c| [c.title, c.id]}, Column.find_by_title("Default Products Layout").id)
-            %dt.form-label= label_tag 'cms_config[product_layout_id]', "Product Detail", :class => "title"
-            %dd.form-option
-              = select_tag 'cms_config[product_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "product"}).collect{|c| [c.title, c.id]})
-            %dt.form-label= label_tag 'cms_config[links_layout_id]', "Links Index", :class => "title"
-            %dd.form-option
-              = select_tag 'cms_config[links_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "main_column"}).collect{|c| [c.title, c.id]}, Column.find_by_title("Default Links Layout").id)
-            %dt.form-label= label_tag 'cms_config[image_layout_id]', "Image Detail", :class => "title"
-            %dd.form-option
-              = select_tag 'cms_config[image_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "image"}).collect{|c| [c.title, c.id]})
+            = link_to("Layouts", "javascript:void(0)", :id => "advanced-expander")
+            #advanced-options
+              %dt.form-label= label_tag 'cms_config[master_layout_id]', "Master Layout", :class => "title"
+              %dd.form-option
+                = select_tag 'cms_config[master_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "master"}).collect{|c| [c.title, c.id]}.insert(0, "Select a Master Layout"), 0)
+              %dt.form-label= label_tag 'cms_config[homepage_layout_id]', "Homepage Layout", :class => "title"
+              %dd.form-option
+                = select_tag 'cms_config[homepage_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "main_column"}).collect{|c| [c.title, c.id]}, Column.find_by_title("Default Homepage Layout").id)
+              %dt.form-label= label_tag 'cms_config[page_layout_id]', "Page Layout", :class => "title"
+              %dd.form-option
+                = select_tag 'cms_config[page_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "main_column"}).collect{|c| [c.title, c.id]}, Column.find_by_title("Default Page Layout").id)
+              %dt.form-label= label_tag 'cms_config[blog_layout_id]', "Blog Layout", :class => "title"
+              %dd.form-option
+                = select_tag 'cms_config[blog_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "main_column"}).collect{|c| [c.title, c.id]}, Column.find_by_title("Default Blog Layout").id)
+              %dt.form-label= label_tag 'cms_config[events_layout_id]', "Events Index", :class => "title"
+              %dd.form-option
+                = select_tag 'cms_config[events_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "main_column"}).collect{|c| [c.title, c.id]}, Column.find_by_title("Default Events Layout").id)
+              %dt.form-label= label_tag 'cms_config[event_layout_id]', "Event Detail", :class => "title"
+              %dd.form-option
+                = select_tag 'cms_config[event_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "event"}).collect{|c| [c.title, c.id]})
+              %dt.form-label= label_tag 'cms_config[products_layout_id]', "Products Index", :class => "title"
+              %dd.form-option
+                = select_tag 'cms_config[products_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "main_column"}).collect{|c| [c.title, c.id]}, Column.find_by_title("Default Products Layout").id)
+              %dt.form-label= label_tag 'cms_config[product_layout_id]', "Product Detail", :class => "title"
+              %dd.form-option
+                = select_tag 'cms_config[product_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "product"}).collect{|c| [c.title, c.id]})
+              %dt.form-label= label_tag 'cms_config[links_layout_id]', "Links Index", :class => "title"
+              %dd.form-option
+                = select_tag 'cms_config[links_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "main_column"}).collect{|c| [c.title, c.id]}, Column.find_by_title("Default Links Layout").id)
+              %dt.form-label= label_tag 'cms_config[image_layout_id]', "Image Detail", :class => "title"
+              %dd.form-option
+                = select_tag 'cms_config[image_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "image"}).collect{|c| [c.title, c.id]})
     = clear
     = f.submit
   - content_for :head do
@@ -115,3 +115,11 @@
       div#main-form-options { width: 520px; float: left; }
       ==#theme-and-layouts dt { float: left; margin: 0 10px 0 0; width: 200px; }
       ==#theme-and-layouts dd.form-option { padding: 0 0 10px 0; }
+      ==#advanced-options { display: none; }
+      ==#advanced-expander { padding: 20px 0; font-size: 1.6em; display: block; }
+    %script
+      jQuery().ready(function() {
+      jQuery("#advanced-expander").click(function(){
+      jQuery("#advanced-options").slideToggle();
+      });
+      });
