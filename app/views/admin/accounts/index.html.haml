@@ -25,25 +25,25 @@
         - else
           = account.title
         .account-details-link.detail
-          = link_to("Details", "javascript:void(0)", :onclick => "jQuery('#account-details-#{account.id}').toggle()")
-          = link_to("Stats", admin_account_stats_path(account.id))
+          = #link_to("Details", "javascript:void(0)", :onclick => "jQuery('#account-details-#{account.id}').toggle()")
+          = #link_to("Stats", admin_account_stats_path(account.id))
         %ul.account-details.detail{:id => "account-details-#{account.id}"}
-          - if @cms_config['modules']['pages']
-            %li= pluralize(account.pages.size, "Page") if account.pages.size > 0
-          - if @cms_config['modules']['blog']
-            %li= pluralize(account.articles.size, "Article") if account.articles.size > 0
-          - if @cms_config['features']['testimonials']
-            %li= pluralize(account.testimonials.size, "Testimonial") if account.testimonials.size > 0
-          - if @cms_config['modules']['events']
-            %li= pluralize(account.events.size, "Event") if account.events.size > 0
-          - if @cms_config['modules']['product']
-            %li= pluralize(account.products.size, "Product") if account.products.size > 0
-          - if @cms_config['modules']['newsletters']
-            %li= pluralize(account.newsletters.size, "Newsletter") if account.newsletters.size > 0
-          - if @cms_config['modules']['links']
-            %li= pluralize(account.links.size, "Link") if account.links.size > 0
-          %li= pluralize(account.assets.size, "Asset") if account.assets.size > 0 
-          %li= pluralize(account.inquiries.size, "Inquiry") if account.inquiries.size > 0 
+          -#- if @cms_config['modules']['pages']
+          -#  %li= pluralize(account.pages.size, "Page") if account.pages.size > 0
+          -#- if @cms_config['modules']['blog']
+          -#  %li= pluralize(account.articles.size, "Article") if account.articles.size > 0
+          -#- if @cms_config['features']['testimonials']
+          -#  %li= pluralize(account.testimonials.size, "Testimonial") if account.testimonials.size > 0
+          -#- if @cms_config['modules']['events']
+          -#  %li= pluralize(account.events.size, "Event") if account.events.size > 0
+          -#- if @cms_config['modules']['product']
+          -#  %li= pluralize(account.products.size, "Product") if account.products.size > 0
+          -#- if @cms_config['modules']['newsletters']
+          -#  %li= pluralize(account.newsletters.size, "Newsletter") if account.newsletters.size > 0
+          -#- if @cms_config['modules']['links']
+          -#  %li= pluralize(account.links.size, "Link") if account.links.size > 0
+          -#%li= pluralize(account.assets.size, "Asset") if account.assets.size > 0 
+          -#%li= pluralize(account.inquiries.size, "Inquiry") if account.inquiries.size > 0 
       %td
         .detail
           - if account.domain
