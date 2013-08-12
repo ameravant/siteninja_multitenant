@@ -113,6 +113,8 @@ namespace :db do
     @temp = Template.new
       @color_scheme                         = ColorScheme.find(@cms_config['site_settings']['color_scheme_id'])
       @temp.title                           = "Default Template"
+      @temp.head_script                     = @color_scheme.theme.head_script
+      @temp.foot_script                     = @color_scheme.theme.foot_script
       @temp.stylesheet                      = @color_scheme.theme.stylesheet
       @temp.additional_styles               = @color_scheme.css
       @temp.layout_top                      = @color_scheme.theme.layout_top
