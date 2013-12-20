@@ -78,6 +78,9 @@
               = select_tag 'cms_config[color_scheme_id]', options_for_select(ColorScheme.all(:conditions => {:master => true}).collect{|c| ["#{c.theme.title} - #{c.title}", c.id]})
             = link_to("Layouts", "javascript:void(0)", :id => "advanced-expander")
             #advanced-options
+              %dt.form-label= label_tag 'cms_config[pages_account_id]', "Default Pages", :class => "title"
+              %dd.form-option
+                = select_tag 'cms_config[pages_account_id]', options_for_select(Account.all.collect{|c| [c.title, c.id]}.insert(0, "Select Account to copy pages from"), 0)
               %dt.form-label= label_tag 'cms_config[master_layout_id]', "Master Layout", :class => "title"
               %dd.form-option
                 = select_tag 'cms_config[master_layout_id]', options_for_select(Column.all(:conditions => {:master => true, :column_location => "master"}).collect{|c| [c.title, c.id]}.insert(0, "Select a Master Layout"), 0)
