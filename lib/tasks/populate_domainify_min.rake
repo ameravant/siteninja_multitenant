@@ -204,7 +204,9 @@ namespace :db do
       @temp.css_link_hover_color                  = @color_scheme.css_link_hover_color
     @temp.save
     @temp_css.template_id = @temp.id
+    @temp_css.save
     @temp_html.template_id = @temp.id
+    @temp_html.save
     Setting.create(
       :newsletter_from_email => 'admin@ameravant.com',
       :footer_text => "<p>&copy; #YEAR# #{@cms_config['website']['name']}</p>",
