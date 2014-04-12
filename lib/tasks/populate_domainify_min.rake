@@ -111,19 +111,21 @@ namespace :db do
     
     
     @temp = Template.new
+    @temp_html = TemplateHtml.new
+    @temp_css = TemplateCss.new
       @color_scheme                         = ColorScheme.find(@cms_config['site_settings']['color_scheme_id'])
       @temp.title                           = "Default Template"
       @temp.head_script                     = @color_scheme.theme.head_script
       @temp.foot_script                     = @color_scheme.theme.foot_script
-      @temp.stylesheet                      = @color_scheme.theme.stylesheet
-      @temp.additional_styles               = @color_scheme.css
+      @temp_css.stylesheet                      = @color_scheme.theme.stylesheet
+      @temp_css.additional_styles               = @color_scheme.css
       @temp.layout_top                      = @color_scheme.theme.layout_top
       @temp.layout_bottom                   = @color_scheme.theme.layout_bottom
-      @temp.article_show                    = @color_scheme.theme.article_show  
-      @temp.articles_index                  = @color_scheme.theme.articles_index
-      @temp.small_article_for_index         = @color_scheme.theme.small_article_for_index
-      @temp.medium_article_for_index        = @color_scheme.theme.medium_article_for_index
-      @temp.large_article_for_index         = @color_scheme.theme.large_article_for_index
+      @temp_html.article_show                    = @color_scheme.theme.article_show  
+      @temp_html.articles_index                  = @color_scheme.theme.articles_index
+      @temp_html.small_article_for_index         = @color_scheme.theme.small_article_for_index
+      @temp_html.medium_article_for_index        = @color_scheme.theme.medium_article_for_index
+      @temp_html.large_article_for_index         = @color_scheme.theme.large_article_for_index
       @temp.slideshow_overlay_position      = @color_scheme.theme.slideshow_overlay_position
       @temp.slideshow_background_color      = @color_scheme.theme.slideshow_background_color
       @temp.slideshow_height                = @color_scheme.theme.slideshow_height
@@ -143,7 +145,7 @@ namespace :db do
       @temp.wide_slideshow_height_standard  = @color_scheme.theme.wide_slideshow_height_standard
       @temp.wide_slideshow_height_tablet    = @color_scheme.theme.wide_slideshow_height_tablet
       @temp.wide_slideshow_height_mobile    = @color_scheme.theme.wide_slideshow_height_mobile
-      @temp.slideshow_styles                = @color_scheme.theme.slideshow_styles
+      @temp_css.slideshow_styles                = @color_scheme.theme.slideshow_styles
       @temp.wide_slideshow_width_mobile     = @color_scheme.theme.wide_slideshow_width_mobile
       @temp.wide_slideshow_width_tablet     = @color_scheme.theme.wide_slideshow_width_tablet
       @temp.wide_slideshow_width_standard   = @color_scheme.theme.wide_slideshow_width_standard
@@ -201,6 +203,8 @@ namespace :db do
       @temp.css_link_active_color                 = @color_scheme.css_link_active_color
       @temp.css_link_hover_color                  = @color_scheme.css_link_hover_color
     @temp.save
+    @temp_css.template_id = @temp.id
+    @temp_html.template_id = @temp.id
     Setting.create(
       :newsletter_from_email => 'admin@ameravant.com',
       :footer_text => "<p>&copy; #YEAR# #{@cms_config['website']['name']}</p>",
