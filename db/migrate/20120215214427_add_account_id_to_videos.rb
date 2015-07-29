@@ -18,7 +18,7 @@ class AddAccountIdToVideos < ActiveRecord::Migration
   end
 
   def self.down
-    remove_column :vidoes, :master
+    remove_column :videos, :master
     remove_column :videos, :account_id
   end
 end
