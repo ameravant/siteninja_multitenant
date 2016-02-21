@@ -76,7 +76,7 @@ class Admin::AccountsController < AdminController
       make_initial_domain_folder(path) unless File.exists?("#{path}/config/domains") && File.exists?("#{path}/shared/config")
       system "mkdir #{path}/current/config/domains/#{@account.directory}"
       system "mv #{path}/current/config/domains/#{@account.directory} #{path}/shared/config/domains/"
-      system "ln -s #{path}/shared/config/domains/#{@account.directory} #{path}/current/config/domains/#{@account.directory}"
+      #system "ln -s #{path}/shared/config/domains/#{@account.directory} #{path}/current/config/domains/#{@account.directory}"
       # if params[:oldaccount][:name].blank?
         system "cp #{path}/shared/config/cms.yml #{path}/shared/config/domains/#{@account.directory}/cms.yml"
       # else
