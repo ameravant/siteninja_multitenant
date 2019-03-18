@@ -1,6 +1,7 @@
 class Account < ActiveRecord::Base
   cattr_accessor :current
   has_many :stats
+  has_and_belongs_to_many :shared_layouts, :class_name => "Column"
   validates_uniqueness_of :title
   validates_uniqueness_of :domain
   for klass in Klasses
