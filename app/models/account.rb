@@ -8,7 +8,7 @@ class Account < ActiveRecord::Base
     has_many klass.table_name.to_sym
   end
   has_one :setting
-  named_scope :master, :conditions => "domain is null AND title = 'master'"
+  named_scope :master, :conditions => "title = 'master' and id = 1"
 
   def is_master?
     self.title == 'master' && self.domain.nil?
