@@ -19,6 +19,10 @@ namespace :db do
       @cms_config = YAML::load_file("#{RAILS_ROOT}/config/domains/#{directory}/cms.yml")
     end
     @default_layout = Column.find(@cms_config['site_settings']['page_layout_id'])
+    @default_privacy = Page.find_by_permalink("privacy-policy", :conditions => {:id => $MASTER_ACCOUNT.id}).body.gsub("#name#", $CURRENT_ACCOUNT.title)
+    @default_terms = Page.find_by_permalink("terms-of-use", :conditions => {:id => $MASTER_ACCOUNT.id}).body.gsub("#name#", $CURRENT_ACCOUNT.title)
+    @default_accessibility = Page.find_by_permalink("accessibility", :conditions => {:id => $MASTER_ACCOUNT.id}).body.gsub("#name#", $CURRENT_ACCOUNT.title)
+      
     
     require 'populator'
     require 'faker'
@@ -44,9 +48,13 @@ namespace :db do
       Page.create(:title => 'Links', :meta_title => 'Links', :body => "links", :permalink => "links", :can_delete => false, :account_id => $CURRENT_ACCOUNT.id, :main_column_id => @cms_config['site_settings']['links_layout_id']) if @cms_config['modules']['links']
       Page.create(:title => 'Testimonials', :body => 'Testimonials', :meta_title => 'Testimonials', :show_in_footer => true, :show_in_menu => false, :can_delete => false, :account_id => $CURRENT_ACCOUNT.id, :main_column_id => @default_layout.id) if @cms_config['features']['testimonials']
       Page.create(:parent_id => contact.id, :title => 'Contact Us - Thank You', :body => 'Thank you for your inquiry. We usually respond within 24 hours.', :meta_title => "Message sent", :permalink => "inquiry_received", :status => 'hidden', :show_in_footer => false, :account_id => $CURRENT_ACCOUNT.id, :main_column_id => @default_layout.id)
-      Page.create(:parent_id => contact.id, :title => 'Privacy Policy',:show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => 'This page can be helpful when creating a privacy policy <a href="http://www.freeprivacypolicy.com/privacy.php">http://www.freeprivacypolicy.com/privacy.php</a>', :meta_title => "Privacy Policy", :account_id => $CURRENT_ACCOUNT.id, :main_column_id => @default_layout.id)
-      Page.create(:parent_id => contact.id, :title => 'Terms of Use', :show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => 'Terms of Use', :status => 'hidden', :meta_title => "Terms of Use", :account_id => $CURRENT_ACCOUNT.id, :main_column_id => @default_layout.id)
+      Page.create(:parent_id => contact.id, :title => 'Privacy Policy',:show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => @default_privacy ? @default_privace : 'This page can be helpful when creating a privacy policy <a href="http://www.freeprivacypolicy.com/privacy.php">http://www.freeprivacypolicy.com/privacy.php</a>', :meta_title => "Privacy Policy", :account_id => $CURRENT_ACCOUNT.id, :main_column_id => @default_layout.id)
+      Page.create(:parent_id => contact.id, :title => 'Terms of Use', :show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => @default_terms ? @default_terms : 'Terms of Use', :status => 'hidden', :meta_title => "Terms of Use", :account_id => $CURRENT_ACCOUNT.id, :main_column_id => @default_layout.id)
+      Page.create(:parent_id => contact.id, :title => 'Accessibility', :show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => @default_accessiblity ? @default_accessibility : 'Accessibility', :status => 'hidden', :meta_title => "Accessibility", :account_id => $CURRENT_ACCOUNT.id, :main_column_id => @default_layout.id)
       Page.create(:title => 'Documents', :meta_title => 'Documents', :body => "documents", :permalink => "documents", :can_delete => false, :account_id => $CURRENT_ACCOUNT.id, :main_column_id => @default_layout.id) if @cms_config['modules']['documents']
+
+
+
       if @cms_config['modules']['documents']
         Folder.create(:title => "Top Folder", :permalink => "top-folder", :can_delete => false)
       end
