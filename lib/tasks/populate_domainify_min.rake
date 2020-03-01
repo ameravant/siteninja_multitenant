@@ -19,9 +19,9 @@ namespace :db do
       @cms_config = YAML::load_file("#{RAILS_ROOT}/config/domains/#{directory}/cms.yml")
     end
     @default_layout = Column.find(@cms_config['site_settings']['page_layout_id'])
-    @default_privacy = Page.find(:conditions => {:permalink => "privacy-policy", :id => $MASTER_ACCOUNT.id}).body.gsub("#name#", $CURRENT_ACCOUNT.title)
-    @default_terms = Page.find(:conditions => {:permalink => "terms-of-use", :id => $MASTER_ACCOUNT.id}).body.gsub("#name#", $CURRENT_ACCOUNT.title)
-    @default_accessibility = Page.find(:conditions => {:permalink => "accessibility", :id => $MASTER_ACCOUNT.id}).body.gsub("#name#", $CURRENT_ACCOUNT.title)
+    @default_privacy = Page.find("privacy-policy", :conditions => {:permalink => "privacy-policy", :account_id => $MASTER_ACCOUNT.id}).body.gsub("#name#", $CURRENT_ACCOUNT.title)
+    @default_terms = Page.find("terms-of-use", :conditions => {:account_id => $MASTER_ACCOUNT.id}).body.gsub("#name#", $CURRENT_ACCOUNT.title)
+    @default_accessibility = Page.find("accessibility", :conditions => {:account_id => $MASTER_ACCOUNT.id}).body.gsub("#name#", $CURRENT_ACCOUNT.title)
       
     
     require 'populator'
