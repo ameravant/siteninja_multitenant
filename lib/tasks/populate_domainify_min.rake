@@ -19,9 +19,12 @@ namespace :db do
       @cms_config = YAML::load_file("#{RAILS_ROOT}/config/domains/#{directory}/cms.yml")
     end
     @default_layout = Column.find(@cms_config['site_settings']['page_layout_id'])
-    @default_privacy = Page.find_by_permalink("privacy-policy", :conditions => {:permalink => "privacy-policy", :account_id => $MASTER_ACCOUNT.id}).body.gsub("#name#", $CURRENT_ACCOUNT.title)
-    @default_terms = Page.find_by_permalink("terms-of-use", :conditions => {:account_id => $MASTER_ACCOUNT.id}).body.gsub("#name#", $CURRENT_ACCOUNT.title)
-    @default_accessibility = Page.find_by_permalink("accessibility", :conditions => {:account_id => $MASTER_ACCOUNT.id}).body.gsub("#name#", $CURRENT_ACCOUNT.title)
+    @default_privacy = Page.find_by_permalink("privacy-policy", :conditions => {:permalink => "privacy-policy", :account_id => $MASTER_ACCOUNT.id})
+    @default_privacy = @default_privacy.body.gsub("#name#", $CURRENT_ACCOUNT.title) if @default_privacy
+    @default_terms = Page.find_by_permalink("terms-of-use", :conditions => {:account_id => $MASTER_ACCOUNT.id})
+    @default_terms = @default_terms.body.gsub("#name#", $CURRENT_ACCOUNT.title) if @default_terms
+    @default_accessibility = Page.find_by_permalink("accessibility", :conditions => {:account_id => $MASTER_ACCOUNT.id})
+    @default_accessibility = @default_accessibility.body.gsub("#name#", $CURRENT_ACCOUNT.title) if @default_accessibility
       
     
     require 'populator'
