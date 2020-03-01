@@ -20,7 +20,7 @@ namespace :db do
     end
     @default_layout = Column.find(@cms_config['site_settings']['page_layout_id'])
     
-    @default_privacy = Page.find_by_permalink("privacy-policy", :conditions => {:account_id => $MASTER_ACCOUNT.id}).body.gsub("#name#", $CURRENT_ACCOUNT.title) if if Page.find_by_permalink("privacy-policy", :conditions => {:account_id => $MASTER_ACCOUNT.id})
+    @default_privacy = Page.find_by_permalink("privacy-policy", :conditions => {:account_id => $MASTER_ACCOUNT.id}).body.gsub("#name#", $CURRENT_ACCOUNT.title) if Page.find_by_permalink("privacy-policy", :conditions => {:account_id => $MASTER_ACCOUNT.id})
     @default_terms = Page.find_by_permalink("terms-of-use", :conditions => {:account_id => $MASTER_ACCOUNT.id}).body.gsub("#name#", $CURRENT_ACCOUNT.title) if Page.find_by_permalink("terms-of-use", :conditions => {:account_id => $MASTER_ACCOUNT.id})
     @default_accessibility = Page.find_by_permalink("accessibility", :conditions => {:account_id => $MASTER_ACCOUNT.id}).body.gsub("#name#", $CURRENT_ACCOUNT.title) if Page.find_by_permalink("accessibility", :conditions => {:account_id => $MASTER_ACCOUNT.id})
       
