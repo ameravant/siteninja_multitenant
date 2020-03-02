@@ -33,9 +33,9 @@ namespace :db do
     
     def add_pages
       puts "Creating pages..."
-      @default_privacy = Page.first(:conditions => {:account_id => $MASTER_ACCOUNT.id, :permalink => "privacy-policy"}).body.gsub("#name#", $CURRENT_ACCOUNT.title)
-      @default_terms = Page.first(:conditions => {:account_id => $MASTER_ACCOUNT.id, :permalink => "terms-of-use"}).body.gsub("#name#", $CURRENT_ACCOUNT.title)
-      @default_accessibility = Page.first(:conditions => {:account_id => $MASTER_ACCOUNT.id, :permalink => "accessibility"}).body.gsub("#name#", $CURRENT_ACCOUNT.title)
+      #@default_privacy = Page.first(:conditions => {:account_id => $MASTER_ACCOUNT.id, :permalink => "privacy-policy"}).body.gsub("#name#", $CURRENT_ACCOUNT.title)
+      #@default_terms = Page.first(:conditions => {:account_id => $MASTER_ACCOUNT.id, :permalink => "terms-of-use"}).body.gsub("#name#", $CURRENT_ACCOUNT.title)
+      #@default_accessibility = Page.first(:conditions => {:account_id => $MASTER_ACCOUNT.id, :permalink => "accessibility"}).body.gsub("#name#", $CURRENT_ACCOUNT.title)
 
       home = Page.create(:title => 'Home', :body => 'home', :meta_title => "Home", :permalink => "home", :can_delete => false, :position => 1, :account_id => $CURRENT_ACCOUNT.id, :main_column_id => @cms_config['site_settings']['homepage_layout_id'])
       Page.create(:title => 'About Us', :body => 'About', :meta_title => "About #{@cms_config['website']['name']}", :account_id => $CURRENT_ACCOUNT.id, :main_column_id => @cms_config['site_settings']['blog_layout_id'])
@@ -49,9 +49,9 @@ namespace :db do
       Page.create(:title => 'Links', :meta_title => 'Links', :body => "links", :permalink => "links", :can_delete => false, :account_id => $CURRENT_ACCOUNT.id, :main_column_id => @cms_config['site_settings']['links_layout_id']) if @cms_config['modules']['links']
       Page.create(:title => 'Testimonials', :body => 'Testimonials', :meta_title => 'Testimonials', :show_in_footer => true, :show_in_menu => false, :can_delete => false, :account_id => $CURRENT_ACCOUNT.id, :main_column_id => @default_layout.id) if @cms_config['features']['testimonials']
       Page.create(:parent_id => contact.id, :title => 'Contact Us - Thank You', :body => 'Thank you for your inquiry. We usually respond within 24 hours.', :meta_title => "Message sent", :permalink => "inquiry_received", :status => 'hidden', :show_in_footer => false, :account_id => $CURRENT_ACCOUNT.id, :main_column_id => @default_layout.id)
-      Page.create(:parent_id => contact.id, :title => 'Privacy Policy',:show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => @default_privacy, :meta_title => "Privacy Policy", :account_id => $CURRENT_ACCOUNT.id, :main_column_id => @default_layout.id)
-      Page.create(:parent_id => contact.id, :title => 'Terms of Use', :show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => @default_terms, :status => 'hidden', :meta_title => "Terms of Use", :account_id => $CURRENT_ACCOUNT.id, :main_column_id => @default_layout.id)
-      Page.create(:parent_id => contact.id, :title => 'Accessibility', :show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => @default_accessiblity, :status => 'hidden', :meta_title => "Accessibility", :account_id => $CURRENT_ACCOUNT.id, :main_column_id => @default_layout.id)
+      Page.create(:parent_id => contact.id, :title => 'Privacy Policy',:show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => 'This page can be helpful when creating a privacy policy <a href="http://www.freeprivacypolicy.com/privacy.php">http://www.freeprivacypolicy.com/privacy.php</a>', :meta_title => "Privacy Policy", :account_id => $CURRENT_ACCOUNT.id, :main_column_id => @default_layout.id)
+      Page.create(:parent_id => contact.id, :title => 'Terms of Use', :show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => 'Terms of Use', :status => 'hidden', :meta_title => "Terms of Use", :account_id => $CURRENT_ACCOUNT.id, :main_column_id => @default_layout.id)
+      Page.create(:parent_id => contact.id, :title => 'Accessibility', :show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => 'Accessibility', :status => 'hidden', :meta_title => "Accessibility", :account_id => $CURRENT_ACCOUNT.id, :main_column_id => @default_layout.id)
       Page.create(:title => 'Documents', :meta_title => 'Documents', :body => "documents", :permalink => "documents", :can_delete => false, :account_id => $CURRENT_ACCOUNT.id, :main_column_id => @default_layout.id) if @cms_config['modules']['documents']
 
 
