@@ -21,10 +21,43 @@ class Admin::AccountsController < AdminController
     Account.create(:title => "master") unless Account.count > 0
     @master_settings = Account.master.first.setting
     if @account.save
+
       add_cms_to_shared
       add_basic_data# if (!params[:oldaccount][:name].blank? or !params[:database][:database].blank?) #Don't add if there is an existing database for the account.
+
+
+      directory = @account.title.gsub(/\W+/, ' ').strip.downcase.gsub(/\ +/, '-')
+      cms_config = YAML::load_file("#{RAILS_ROOT}/config/domains/#{directory}/cms.yml")
+      @default_layout = Column.find(cms_config['site_settings']['page_layout_id'])
+      @default_privacy = Page.find_by_permalink("privacy-policy").body.gsub("#name#", @account.title) if Page.find_by_permalink("privacy-policy")
+      @default_terms = Page.find_by_permalink("terms-of-use").body.gsub("#name#", @account.title) if Page.find_by_permalink("terms-of-use")
+      @default_accessibility = Page.find_by_permalink("accessibility").body.gsub("#name#", @account.title) if Page.find_by_permalink("accessibility")
+
+      page = Page.create(:title => 'Accessibility1',:show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => @default_accessibility, :meta_title => "Accessibility1", :account_id => @account.id, :main_column_id => @default_layout.id)
+      menu = page.menus.new
+      menu.account_id = @account.id
+      menu.show_in_main_menu = false
+      menu.show_in_side_column = false
+      menu.show_in_footer = true
+      menu.save
+      page = Page.create(:title => 'Privacy Policy',:show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => @default_privacy, :meta_title => "Privacy Policy", :account_id => @account.id, :main_column_id => @default_layout.id)
+      menu = page.menus.new
+      menu.account_id = @account.id
+      menu.show_in_main_menu = false
+      menu.show_in_side_column = false
+      menu.show_in_footer = true
+      menu.save
+      page = Page.create(:title => 'Terms of Use', :show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => @default_terms, :status => 'hidden', :meta_title => "Terms of Use", :account_id => @account.id, :main_column_id => @default_layout.id)
+      menu = page.menus.new
+      menu.account_id = @account.id
+      menu.show_in_main_menu = false
+      menu.show_in_side_column = false
+      menu.show_in_footer = true
+      menu.save
+
       redirect_to admin_accounts_path #{}"http://#{self.request.domain}"
       flash[:notice] = "You've successfully created an account"
+
     else
       render :new
     end
