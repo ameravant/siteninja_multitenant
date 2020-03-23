@@ -33,7 +33,7 @@ class Admin::AccountsController < AdminController
       @default_terms = Page.find_by_permalink("terms-of-use").body.gsub("#name#", @account.title) if Page.find_by_permalink("terms-of-use")
       @default_accessibility = Page.find_by_permalink("accessibility").body.gsub("#name#", @account.title) if Page.find_by_permalink("accessibility")
 
-      page = Page.create(:title => 'Accessibility1',:show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => @default_accessibility, :meta_title => "Accessibility1", :account_id => @account.id, :main_column_id => @default_layout.id)
+      page = Page.create(:title => 'Accessibility',:show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => @default_accessibility, :meta_title => "Accessibility", :account_id => @account.id, :main_column_id => @default_layout.id)
       menu = page.menus.new
       menu.account_id = @account.id
       menu.show_in_main_menu = false
