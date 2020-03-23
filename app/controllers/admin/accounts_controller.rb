@@ -29,9 +29,9 @@ class Admin::AccountsController < AdminController
       directory = @account.title.gsub(/\W+/, ' ').strip.downcase.gsub(/\ +/, '-')
       cms_config = YAML::load_file("#{RAILS_ROOT}/config/domains/#{directory}/cms.yml")
       @default_layout = Column.find(cms_config['site_settings']['page_layout_id'])
-      @default_privacy = Page.find_by_permalink("privacy-policy").body.gsub("#name#", @account.title) if Page.find_by_permalink("privacy-policy")
-      @default_terms = Page.find_by_permalink("terms-of-use").body.gsub("#name#", @account.title) if Page.find_by_permalink("terms-of-use")
-      @default_accessibility = Page.find_by_permalink("accessibility").body.gsub("#name#", @account.title) if Page.find_by_permalink("accessibility")
+      @default_privacy = Page.find_by_permalink("privacy-policy", :conditions => {:account_id => 1}).body.gsub("#name#", @account.title) if Page.find_by_permalink("privacy-policy")
+      @default_terms = Page.find_by_permalink("terms-of-use", :conditions => {:account_id => 1}).body.gsub("#name#", @account.title) if Page.find_by_permalink("terms-of-use")
+      @default_accessibility = Page.find_by_permalink("accessibility", :conditions => {:account_id => 1}).body.gsub("#name#", @account.title) if Page.find_by_permalink("accessibility")
 
       page = Page.create(:title => 'Accessibility',:show_articles => false,:show_events => false, :show_in_footer => true, :show_in_menu => false, :body => @default_accessibility, :meta_title => "Accessibility", :account_id => @account.id, :main_column_id => @default_layout.id)
       menu = page.menus.new
