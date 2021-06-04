@@ -11,7 +11,7 @@ class Account < ActiveRecord::Base
   named_scope :master, :conditions => "title = 'master' and id = 1"
 
   def is_master?
-    self.title == 'master' && self.domain.nil?
+    self.id == 1
   end
   
   def yml_path

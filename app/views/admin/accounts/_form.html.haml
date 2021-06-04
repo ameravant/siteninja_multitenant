@@ -7,35 +7,35 @@
           .note Adding modules does not currently add the required placeholder pages.
           
         .checkboxes
-          = check_box_tag 'cms_config[modules_blog]', @current_config['modules']['blog'], @current_config['modules']['blog'], :disabled => !@cms_config['modules']['blog']
+          = check_box_tag 'cms_config[modules_blog]', @current_config['modules']['blog'], @current_config['modules']['blog'], :disabled => @account.id == 1
           = label_tag 'cms_config[modules_blog]', "Blog"
           %br
-          = check_box_tag 'cms_config[modules_documents]', @current_config['modules']['documents'], @current_config['modules']['documents'], :disabled => !@cms_config['modules']['documents']
+          = check_box_tag 'cms_config[modules_documents]', @current_config['modules']['documents'], @current_config['modules']['documents'], :disabled => @account.id == 1
           = label_tag 'cms_config[modules_documents]', "Documents"
           %br
-          = check_box_tag 'cms_config[modules_events]', @current_config['modules']['events'], @current_config['modules']['events'], :disabled => !@cms_config['modules']['events']
+          = check_box_tag 'cms_config[modules_events]', @current_config['modules']['events'], @current_config['modules']['events'], :disabled => @account.id == 1
           = label_tag 'cms_config[modules_events]', "Events"
           %br
-          = check_box_tag 'cms_config[modules_product]', @current_config['modules']['product'], @current_config['modules']['product'], :disabled => !@cms_config['modules']['product']
+          = check_box_tag 'cms_config[modules_product]', @current_config['modules']['product'], @current_config['modules']['product'], :disabled => @account.id == 1
           = label_tag 'cms_config[modules_product]', "Product Catalog"
           %br
-          = check_box_tag 'cms_config[modules_galleries]', @current_config['modules']['galleries'], @current_config['modules']['galleries'], :disabled => !@cms_config['modules']['galleries']
+          = check_box_tag 'cms_config[modules_galleries]', @current_config['modules']['galleries'], @current_config['modules']['galleries'], :disabled => @account.id == 1
           = label_tag 'cms_config[modules_galleries]', "Image Galleries"
           %br
-          = check_box_tag 'cms_config[modules_newsletters]', @current_config['modules']['newsletters'], @current_config['modules']['newsletters'], :disabled => !@cms_config['modules']['newsletters']
+          = check_box_tag 'cms_config[modules_newsletters]', @current_config['modules']['newsletters'], @current_config['modules']['newsletters'], :disabled => @account.id == 1
           = label_tag 'cms_config[modules_newsletters]', "Newsletters"
           %br
-          = check_box_tag 'cms_config[modules_members]', @current_config['modules']['members'], @current_config['modules']['members']
+          = check_box_tag 'cms_config[modules_members]', @current_config['modules']['members'], @current_config['modules']['members'], :disabled => @account.id == 1
           = label_tag 'cms_config[modules_members]', "Private Pages"
           %br
-          = check_box_tag 'cms_config[modules_links]', @current_config['modules']['links'], @current_config['modules']['links'], :disabled => !@cms_config['modules']['links']
+          = check_box_tag 'cms_config[modules_links]', @current_config['modules']['links'], @current_config['modules']['links'], :disabled =>  @account.id == 1
           = label_tag 'cms_config[modules_links]', "Links"
         %h3 Features
         .checkboxes
-          = check_box_tag 'cms_config[features_testimonials]', @current_config['features']['testimonials'], @current_config['features']['testimonials']
+          = check_box_tag 'cms_config[features_testimonials]', @current_config['features']['testimonials'], @current_config['features']['testimonials'], :disabled => @account.id == 1
           = label_tag 'cms_config[features_testimonials]', "Testimonials"
           %br
-          = check_box_tag 'cms_config[features_feature_box]', @current_config['features']['feature_box'], @current_config['features']['feature_box']
+          = check_box_tag 'cms_config[features_feature_box]', @current_config['features']['feature_box'], @current_config['features']['feature_box'], :disabled => @account.id == 1
           = label_tag 'cms_config[features_feature_box]', "Feature Box"
         
               
